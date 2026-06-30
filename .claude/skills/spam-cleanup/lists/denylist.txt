@@ -1,0 +1,5 @@
+# Spam-cleanup denylist — senders/domains to ALWAYS trash from Spam.
+# One entry per line. An entry is a full address (name@example.com) or a bare
+# domain (example.com). A domain matches any address at that domain.
+# Lines starting with '#' are comments. The skill appends user-confirmed
+# deletions here — never auto-added from a content-only judgment.
