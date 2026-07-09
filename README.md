@@ -2,89 +2,14 @@
 
 A small, safety-first collection of reusable Gmail cleanup skills. These skills are designed to help an assistant remove stale, low-value Gmail clutter while reassuring the user that important mail stays protected.
 
-The project now keeps every repo-owned skill in one canonical location: `skills/<skill-name>/SKILL.md`.
+The project currently contains two starter skills:
 
-The project currently contains three Gmail skills:
+| Skill | Best for | Personality |
+|---|---|---|
+| `gmail-cleanup-starter` | General inbox cleanup setup prompts | Friendly cleanup language |
+| `gmail-safe-trash-starter` | Users who want extra reassurance around deletion safety | Explicit “safe trash” framing |
 
-| Skill | Best for | Personality | Location |
-|---|---|---|---|
-| `gmail-cleanup-starter` | General inbox cleanup setup prompts | Friendly cleanup language | `skills/gmail-cleanup-starter/SKILL.md` |
-| `gmail-safe-trash-starter` | Users who want extra reassurance around deletion safety | Explicit “safe trash” framing | `skills/gmail-safe-trash-starter/SKILL.md` |
-| `spam-cleanup` | Reviewing Gmail Spam, rescuing false positives, and trashing only unmistakable junk | Preview-first spam triage | `skills/spam-cleanup/SKILL.md` |
-
-All skills share the same operating philosophy: **move only clearly stale junk to Gmail Trash, never permanently delete, and never touch receipts, financial records, medical records, family messages, close-friend messages, sent mail, or drafts.**
-
----
-
-## Skill-by-skill guide
-
-### 1. `gmail-cleanup-starter` — general safe inbox cleanup
-
-Use this starter when the user asks for broad Gmail cleanup in plain language, such as “clean up my Gmail,” “set up Gmail cleanup,” or “remove stale junk notifications.” It is intentionally conservative and focuses on old, predictable notification clutter.
-
-**Best fit**
-
-- The user wants a reusable starter skill for Gmail cleanup.
-- The user is comfortable with the word “cleanup,” but still needs safety guardrails.
-- The assistant should collect personal exclusions before doing anything destructive.
-
-**Default behavior**
-
-- Preview matching categories first.
-- Ask for never-touch contacts and institutions.
-- Move only approved stale junk to Trash.
-- Audit Trash after applying filters.
-
-### 2. `gmail-safe-trash-starter` — extra-reassuring cleanup language
-
-Use this starter when the user is nervous about deletion or when you want the skill name itself to communicate that the workflow is recoverable. It uses the same safety posture as `gmail-cleanup-starter`, but its naming and description emphasize Trash-only behavior and hard safety locks.
-
-**Best fit**
-
-- The user says they are worried about losing important mail.
-- The user asks for “safe trash,” “recoverable cleanup,” or a more cautious workflow.
-- The assistant should repeatedly reassure the user that Trash is not permanent deletion.
-
-**Default behavior**
-
-- Same narrow cleanup categories as `gmail-cleanup-starter`.
-- Same required family/close-friend and receipt protections.
-- Same phishing-watch preference handling.
-- Stronger user-facing reassurance around the recoverable 30-day Trash window.
-
-### 3. `spam-cleanup` — Spam folder review and false-positive rescue
-
-Use this skill when the user specifically asks to clean or review Gmail Spam. Unlike the two bulk-cleanup starters, this skill does **not** try to clean the inbox. Its first job is to rescue legitimate messages Gmail wrongly marked as spam; deleting obvious scams is secondary and conservative.
-
-**Best fit**
-
-- The user says “review my Spam folder,” “clean spam,” or “find anything important in Spam.”
-- The user is worried Gmail may have hidden real mail in Spam.
-- The assistant has access to Gmail label actions such as moving threads out of Spam or into Trash.
-
-**Three-bucket model**
-
-```text
-Spam folder
-    │
-    ▼
-Preview every candidate
-    │
-    ├── RESCUE → clear false positives back to Inbox
-    │
-    ├── DELETE → only unmistakable scams/phishing to Trash
-    │
-    └── LEAVE  → ambiguous or promotional mail stays in Spam
-```
-
-**Memory files**
-
-`spam-cleanup` also includes starter memory files under `skills/spam-cleanup/lists/`:
-
-- `allowlist.txt` — senders or domains that should always be rescued from Spam.
-- `denylist.txt` — senders or domains that should always be trashed from Spam after user confirmation.
-
-These files live beside the skill so reviewers can see the complete skill package in one place.
+Both skills share the same operating philosophy: **move only clearly stale junk to Gmail Trash, never permanently delete, and never touch receipts, financial records, medical records, family messages, close-friend messages, sent mail, or drafts.**
 
 ---
 
@@ -136,7 +61,7 @@ These two rules override every cleanup idea. If a query might catch a receipt or
 
 ## Cleanup categories
 
-The two bulk-cleanup starters use clear categories so the user can understand exactly what is happening. The `spam-cleanup` skill uses a separate three-bucket model: rescue clear false positives, trash unmistakable junk, and leave ambiguous messages in Spam.
+The skills use clear categories so the user can understand exactly what is happening.
 
 | Category | Typical match | Default age gate | Default behavior | User involvement |
 |---|---:|---:|---|---|
@@ -181,14 +106,6 @@ Before first use, the assistant should ask for these answers in plain language:
 ---
 
 ## Options users can choose
-
-### Which skill should I use?
-
-| User asks for... | Choose | Why |
-|---|---|---|
-| “Clean up my Gmail” or “set up inbox cleanup” | `gmail-cleanup-starter` | General-purpose safe cleanup starter |
-| “I want this to be very safe / recoverable” | `gmail-safe-trash-starter` | Same safety model with stronger reassurance language |
-| “Check Spam for real emails” or “clean Spam” | `spam-cleanup` | Purpose-built Spam review with false-positive rescue |
 
 ### Cleanup mode
 
@@ -252,32 +169,14 @@ Before first use, the assistant should ask for these answers in plain language:
 
 ## How to install or share a skill
 
-Copy one of the skill folders from the canonical `skills/` directory into your assistant skill directory:
+Copy one of the skill folders into your assistant skill directory:
 
 ```text
 skills/gmail-cleanup-starter/
 skills/gmail-safe-trash-starter/
-skills/spam-cleanup/
 ```
 
-Use `gmail-cleanup-starter` when you want general cleanup wording. Use `gmail-safe-trash-starter` when the user benefits from stronger reassurance that the workflow is conservative and recoverable. Use `spam-cleanup` when the user specifically wants to review Gmail Spam, rescue false positives, or trash obvious scams from Spam.
-
-### Repository organization
-
-```text
-skills/
-├── gmail-cleanup-starter/
-│   └── SKILL.md
-├── gmail-safe-trash-starter/
-│   └── SKILL.md
-└── spam-cleanup/
-    ├── SKILL.md
-    └── lists/
-        ├── allowlist.txt
-        └── denylist.txt
-```
-
-The repository intentionally does **not** keep source skills under `.claude/skills/`. That directory is useful as a local runtime/install target, but keeping one source skill there while others live under `skills/` makes review, sharing, and maintenance confusing. Treat `skills/` as the single source of truth; if a local Claude installation needs the skills, copy or symlink from `skills/` into `.claude/skills/` outside the committed source layout. The `spam-cleanup` skill keeps its starter allowlist and denylist beside the skill under `skills/spam-cleanup/lists/` for the same reason.
+Use `gmail-cleanup-starter` when you want general cleanup wording. Use `gmail-safe-trash-starter` when the user benefits from stronger reassurance that the workflow is conservative and recoverable.
 
 ---
 
@@ -285,8 +184,7 @@ The repository intentionally does **not** keep source skills under `.claude/skil
 
 The skill content has been reviewed for clarity and consistency. Recommended ongoing improvements:
 
-- Keep all skills under `skills/<skill-name>/SKILL.md`; do not add new source skills under `.claude/skills/`.
-- Keep the two bulk-cleanup starters aligned when safety logic changes.
+- Keep the two starters aligned when safety logic changes.
 - Preserve the required setup question for family and close friends.
 - Keep phishing behavior suggest-first unless the matching signal is extremely narrow.
 - Treat welcome/onboarding filters as the highest collateral-risk category because body text may contain order or subscription details.
@@ -294,12 +192,8 @@ The skill content has been reviewed for clarity and consistency. Recommended ong
 
 ---
 
-## Final user-facing scripts
+## Final user-facing script
 
-When starting an inbox cleanup, a friendly assistant can say:
+When starting a cleanup, a friendly assistant can say:
 
 > I can help clean stale Gmail clutter safely. I’ll start with a preview, and I won’t permanently delete anything. I also need your never-touch list first: family, close friends, banks, medical providers, and any active products or subscriptions. If anything looks borderline, I’ll pause and ask instead of guessing.
-
-When starting a Spam review, a friendly assistant can say:
-
-> I can review Spam carefully for anything Gmail may have hidden by mistake. I’ll show you what I recommend rescuing, what looks like unmistakable junk, and what I’d leave alone. I won’t move anything until you confirm.
