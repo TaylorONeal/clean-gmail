@@ -2,14 +2,15 @@
 
 A small, safety-first collection of reusable Gmail cleanup skills. These skills are designed to help an assistant remove stale, low-value Gmail clutter while reassuring the user that important mail stays protected.
 
-The project currently contains two starter skills:
+The project currently contains three Gmail cleanup skills:
 
 | Skill | Best for | Personality |
 |---|---|---|
 | `gmail-cleanup-starter` | General inbox cleanup setup prompts | Friendly cleanup language |
 | `gmail-safe-trash-starter` | Users who want extra reassurance around deletion safety | Explicit “safe trash” framing |
+| `spam-cleanup` | Reviewing Gmail Spam for false positives and obvious junk | Three-bucket rescue / delete / leave workflow |
 
-Both skills share the same operating philosophy: **move only clearly stale junk to Gmail Trash, never permanently delete, and never touch receipts, financial records, medical records, family messages, close-friend messages, sent mail, or drafts.**
+All three skills share the same operating philosophy: **move only clearly stale junk to Gmail Trash, never permanently delete, and never touch receipts, financial records, medical records, family messages, close-friend messages, sent mail, or drafts.** The `spam-cleanup` skill adds a Spam-folder-specific safety layer: rescue likely false positives to Inbox, trash only unmistakable junk, and leave promotions or ambiguous messages untouched.
 
 ---
 
@@ -72,6 +73,31 @@ The skills use clear categories so the user can understand exactly what is happe
 | Unopened promotions | Unread Gmail Promotions category | Older than 30 days | Trash selected senders | Mandatory sender review |
 | Welcome/onboarding | “Welcome to,” “getting started,” setup nudges | Older than 60 days | Trash | Extra receipt audit |
 | Phishing watch | Scam-like campaign patterns | Newer than 14 days detection | Suggest filters; optionally auto-deploy airtight alias filters | Suggest-first by default |
+| Spam false-positive review | Messages already in Spam | Current Spam folder | Rescue to Inbox, Trash unmistakable junk, or leave in Spam | Mandatory preview and confirmation |
+
+---
+
+## Skill-by-skill guide
+
+### `gmail-cleanup-starter`
+
+Use this as the general-purpose Gmail cleanup starter. It is best when the user asks for safe inbox cleanup across stale verification codes, confirm-your-email prompts, old shipping notices, past calendar invites, unread promotions, onboarding sequences, or phishing-watch suggestions. It emphasizes friendly setup language and a conservative preview-first cleanup flow.
+
+### `gmail-safe-trash-starter`
+
+Use this when the user needs stronger reassurance before allowing cleanup. It follows the same narrow cleanup categories and Rule Zero protections as `gmail-cleanup-starter`, but frames actions around Gmail Trash as a recoverable holding area rather than irreversible deletion. This is the best default for cautious users or non-technical users who are worried about losing important mail.
+
+### `spam-cleanup`
+
+Use this when the user specifically wants to review or clean the Gmail Spam folder. It uses a three-bucket model:
+
+| Bucket | Action | When to use |
+|---|---|---|
+| RESCUE | Move to Inbox | Prior correspondence, plausible transactional mail, personal messages, or allowlisted senders |
+| DELETE | Move to Trash | High-confidence scams, phishing, impersonation, or explicitly denylisted senders |
+| LEAVE | Do nothing | Promotions, foreign-language bulk without clear malicious signals, or anything ambiguous |
+
+The Spam workflow always previews proposed rescues and deletes, waits for confirmation, and learns from confirmed decisions with allowlist, denylist, and audit-log files.
 
 ---
 
@@ -174,9 +200,10 @@ Copy one of the skill folders into your assistant skill directory:
 ```text
 skills/gmail-cleanup-starter/
 skills/gmail-safe-trash-starter/
+.claude/skills/spam-cleanup/
 ```
 
-Use `gmail-cleanup-starter` when you want general cleanup wording. Use `gmail-safe-trash-starter` when the user benefits from stronger reassurance that the workflow is conservative and recoverable.
+Use `gmail-cleanup-starter` when you want general cleanup wording. Use `gmail-safe-trash-starter` when the user benefits from stronger reassurance that the workflow is conservative and recoverable. Use `spam-cleanup` when the user wants to review Gmail Spam, rescue false positives, or trash only unmistakable junk already caught by Spam.
 
 ---
 
@@ -185,6 +212,7 @@ Use `gmail-cleanup-starter` when you want general cleanup wording. Use `gmail-sa
 The skill content has been reviewed for clarity and consistency. Recommended ongoing improvements:
 
 - Keep the two starters aligned when safety logic changes.
+- Keep `spam-cleanup` aligned with the same Trash-only, preview-first safety posture while preserving its Spam-specific rescue/delete/leave model.
 - Preserve the required setup question for family and close friends.
 - Keep phishing behavior suggest-first unless the matching signal is extremely narrow.
 - Treat welcome/onboarding filters as the highest collateral-risk category because body text may contain order or subscription details.
