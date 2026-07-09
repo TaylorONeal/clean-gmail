@@ -200,7 +200,7 @@ Copy one of the skill folders into your assistant skill directory:
 ```text
 skills/gmail-cleanup-starter/
 skills/gmail-safe-trash-starter/
-.claude/skills/spam-cleanup/
+skills/spam-cleanup/
 ```
 
 Use `gmail-cleanup-starter` when you want general cleanup wording. Use `gmail-safe-trash-starter` when the user benefits from stronger reassurance that the workflow is conservative and recoverable. Use `spam-cleanup` when the user wants to review Gmail Spam, rescue false positives, or trash only unmistakable junk already caught by Spam.
