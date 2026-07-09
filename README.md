@@ -16,6 +16,78 @@ All skills share the same operating philosophy: **move only clearly stale junk t
 
 ---
 
+## Skill-by-skill guide
+
+### 1. `gmail-cleanup-starter` — general safe inbox cleanup
+
+Use this starter when the user asks for broad Gmail cleanup in plain language, such as “clean up my Gmail,” “set up Gmail cleanup,” or “remove stale junk notifications.” It is intentionally conservative and focuses on old, predictable notification clutter.
+
+**Best fit**
+
+- The user wants a reusable starter skill for Gmail cleanup.
+- The user is comfortable with the word “cleanup,” but still needs safety guardrails.
+- The assistant should collect personal exclusions before doing anything destructive.
+
+**Default behavior**
+
+- Preview matching categories first.
+- Ask for never-touch contacts and institutions.
+- Move only approved stale junk to Trash.
+- Audit Trash after applying filters.
+
+### 2. `gmail-safe-trash-starter` — extra-reassuring cleanup language
+
+Use this starter when the user is nervous about deletion or when you want the skill name itself to communicate that the workflow is recoverable. It uses the same safety posture as `gmail-cleanup-starter`, but its naming and description emphasize Trash-only behavior and hard safety locks.
+
+**Best fit**
+
+- The user says they are worried about losing important mail.
+- The user asks for “safe trash,” “recoverable cleanup,” or a more cautious workflow.
+- The assistant should repeatedly reassure the user that Trash is not permanent deletion.
+
+**Default behavior**
+
+- Same narrow cleanup categories as `gmail-cleanup-starter`.
+- Same required family/close-friend and receipt protections.
+- Same phishing-watch preference handling.
+- Stronger user-facing reassurance around the recoverable 30-day Trash window.
+
+### 3. `spam-cleanup` — Spam folder review and false-positive rescue
+
+Use this skill when the user specifically asks to clean or review Gmail Spam. Unlike the two bulk-cleanup starters, this skill does **not** try to clean the inbox. Its first job is to rescue legitimate messages Gmail wrongly marked as spam; deleting obvious scams is secondary and conservative.
+
+**Best fit**
+
+- The user says “review my Spam folder,” “clean spam,” or “find anything important in Spam.”
+- The user is worried Gmail may have hidden real mail in Spam.
+- The assistant has access to Gmail label actions such as moving threads out of Spam or into Trash.
+
+**Three-bucket model**
+
+```text
+Spam folder
+    │
+    ▼
+Preview every candidate
+    │
+    ├── RESCUE → clear false positives back to Inbox
+    │
+    ├── DELETE → only unmistakable scams/phishing to Trash
+    │
+    └── LEAVE  → ambiguous or promotional mail stays in Spam
+```
+
+**Memory files**
+
+`spam-cleanup` also includes starter memory files under `skills/spam-cleanup/lists/`:
+
+- `allowlist.txt` — senders or domains that should always be rescued from Spam.
+- `denylist.txt` — senders or domains that should always be trashed from Spam after user confirmation.
+
+These files live beside the skill so reviewers can see the complete skill package in one place.
+
+---
+
 ## Quick reassurance
 
 If you are giving this to a non-technical user, start here:
@@ -109,6 +181,14 @@ Before first use, the assistant should ask for these answers in plain language:
 ---
 
 ## Options users can choose
+
+### Which skill should I use?
+
+| User asks for... | Choose | Why |
+|---|---|---|
+| “Clean up my Gmail” or “set up inbox cleanup” | `gmail-cleanup-starter` | General-purpose safe cleanup starter |
+| “I want this to be very safe / recoverable” | `gmail-safe-trash-starter` | Same safety model with stronger reassurance language |
+| “Check Spam for real emails” or “clean Spam” | `spam-cleanup` | Purpose-built Spam review with false-positive rescue |
 
 ### Cleanup mode
 
@@ -214,8 +294,12 @@ The skill content has been reviewed for clarity and consistency. Recommended ong
 
 ---
 
-## Final user-facing script
+## Final user-facing scripts
 
-When starting a cleanup, a friendly assistant can say:
+When starting an inbox cleanup, a friendly assistant can say:
 
 > I can help clean stale Gmail clutter safely. I’ll start with a preview, and I won’t permanently delete anything. I also need your never-touch list first: family, close friends, banks, medical providers, and any active products or subscriptions. If anything looks borderline, I’ll pause and ask instead of guessing.
+
+When starting a Spam review, a friendly assistant can say:
+
+> I can review Spam carefully for anything Gmail may have hidden by mistake. I’ll show you what I recommend rescuing, what looks like unmistakable junk, and what I’d leave alone. I won’t move anything until you confirm.
