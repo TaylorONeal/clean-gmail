@@ -1,0 +1,35 @@
+# Clean Gmail — declarative retention policies
+#
+# Each policy targets a LABEL the user (or a filter) already applies, an age
+# threshold, and an action. Policies are enforced by gmail-scheduled-sweep's
+# monthly retention pass. Rule Zero still applies on top: a message matching
+# a policy but sent by a never_touch sender is always skipped.
+#
+# Actions:
+#   stage  — apply the dated Cleanup/Pending-* label (two-phase; default)
+#   report — count and include in the digest, change nothing
+# There is deliberately NO direct-trash action here: everything flows
+# through the staged pipeline so the review window always applies.
+
+policies:
+  # Examples — edit to match your own labels before enabling.
+  - label: "Notifications/CI"
+    max_age_days: 7
+    action: stage
+    enabled: false
+
+  - label: "Newsletters"
+    max_age_days: 90
+    action: stage
+    enabled: false
+
+  - label: "Alerts/PriceDrops"
+    max_age_days: 30
+    action: stage
+    enabled: false
+
+  # Storage watch: report-only view of what large old mail is costing.
+  - query: "larger:10M older_than:2y"
+    max_age_days: null        # age encoded in the query
+    action: report
+    enabled: true

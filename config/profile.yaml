@@ -1,0 +1,70 @@
+# Clean Gmail — user profile
+#
+# This file is the machine-readable version of the setup questions the
+# interactive skills ask conversationally. Unattended skills (like
+# gmail-scheduled-sweep) CANNOT ask questions, so they read this file
+# instead — and they MUST refuse to run if `configured` is false or if
+# `never_touch.family_and_close_contacts` is empty (Rule Zero B).
+#
+# Fill in real values, set `configured: true`, and commit. Every list here
+# feeds the global exclusions appended to every query and every filter.
+
+configured: false   # flip to true only after family_and_close_contacts is filled in
+
+owner:
+  email: ""                 # the mailbox being cleaned, e.g. taylor.oneal@gmail.com
+  digest_recipient: ""      # where digest DRAFTS are addressed (usually same as owner)
+
+# ── Rule Zero inputs ─────────────────────────────────────────────────────────
+# Senders in never_touch are excluded from EVERY query and EVERY filter,
+# no matter what category is running. Sender-level exclusion is the only
+# safe defense against personal mail that pattern-matches junk.
+never_touch:
+  family_and_close_contacts: []   # REQUIRED. e.g. ["mom@example.com", "sam@example.com"]
+  banks_and_financial: []         # e.g. ["chase.com", "schwab.com", "fidelity.com"]
+  insurers_and_medical: []        # e.g. ["mychart", "kaiser.org", "bcbs.com"]
+  active_products: []             # SaaS/tools whose onboarding mail matters
+  recurring_confirmations: []     # gym, school, class-booking senders to keep
+  extra: []                       # anything else the user says is untouchable
+
+# Brands the user actually shops with — used to vet promo-sender previews,
+# NOT as a delete list.
+ecommerce_brands: []
+
+# ── Per-category age gates (days) ────────────────────────────────────────────
+# Raise a gate to be more conservative. Setting a category to `null`
+# disables it entirely for unattended runs.
+age_gates:
+  verification_codes: 7
+  email_verification_prompts: 30
+  shipping_notices: 60
+  calendar_invites: 14
+  unopened_promotions: 30
+  welcome_onboarding: 60        # highest collateral risk — see README
+  duplicate_digests: 30         # superseded-notification collapse
+  expired_offers: 14            # past hard-expiration promos
+
+# ── Two-phase sweep settings (gmail-scheduled-sweep) ─────────────────────────
+sweep:
+  pending_label_prefix: "Cleanup/Pending"   # dated labels, e.g. Cleanup/Pending-2026-07-13
+  review_window_days: 3                     # commit pass ignores labels younger than this
+  max_actions_per_run: 500                  # hard cap; stop and report if exceeded
+  duplicate_collapse_keep_latest: 2         # per sender+subject group
+  unattended_promotions: "approved_senders_only"  # or "skip"
+  approved_promo_senders: []                # only these may be swept unattended
+
+# ── Spam rescue settings (spam-cleanup, unattended mode) ─────────────────────
+spam_rescue:
+  unattended_mode: "rescue_only"   # unattended runs may RESCUE, never trash
+  allowlist_file: "skills/spam-cleanup/lists/allowlist.txt"
+  denylist_file: "skills/spam-cleanup/lists/denylist.txt"
+
+# ── Phishing watch ───────────────────────────────────────────────────────────
+phishing:
+  dead_alias: ""            # alias that only receives spam (strong signal), or ""
+  mode: "suggest_first"     # suggest_first | report_only
+
+# ── Logging ──────────────────────────────────────────────────────────────────
+logging:
+  audit_log: "logs/audit-log.jsonl"     # append-only, one JSON object per action
+  run_log: "logs/run-log.txt"           # maintenance-loop tracker format

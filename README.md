@@ -1,16 +1,44 @@
 # Clean Gmail Skills
 
-A small, safety-first collection of reusable Gmail cleanup skills. These skills are designed to help an assistant remove stale, low-value Gmail clutter while reassuring the user that important mail stays protected.
+A safety-first collection of reusable Gmail cleanup skills, plus a config layer and scheduling guide for running them unattended. These skills are designed to help an assistant remove stale, low-value Gmail clutter while reassuring the user that important mail stays protected.
 
-The project currently contains three Gmail cleanup skills:
+**Interactive skills** (a human is present and approving):
 
 | Skill | Best for | Personality |
 |---|---|---|
 | `gmail-cleanup-starter` | General inbox cleanup setup prompts | Friendly cleanup language |
 | `gmail-safe-trash-starter` | Users who want extra reassurance around deletion safety | Explicit “safe trash” framing |
 | `spam-cleanup` | Reviewing Gmail Spam for false positives and obvious junk | Three-bucket rescue / delete / leave workflow |
+| `unstar-gmail-starter` | Pruning stale stars while protecting the ones that matter | Approval-gated, star-only, fully reversible |
+| `gmail-maintenance-loop-starter` | Running the skills above on a cadence with a persistent run-log | Orchestration + metering, opt-in unsubscribe pass |
 
-All three skills share the same operating philosophy: **move only clearly stale junk to Gmail Trash, never permanently delete, and never touch receipts, financial records, medical records, family messages, close-friend messages, sent mail, or drafts.** The `spam-cleanup` skill adds a Spam-folder-specific safety layer: rescue likely false positives to Inbox, trash only unmistakable junk, and leave promotions or ambiguous messages untouched.
+**Unattended skills** (fired by scheduled routines, no human in the loop — see [`AUTOMATION.md`](AUTOMATION.md)):
+
+| Skill | Best for | Safety model |
+|---|---|---|
+| `gmail-scheduled-sweep` | Weekly automated cleanup | Two-phase staged trash: label first, trash days later, human veto window in between |
+| `gmail-subscription-audit` | Quarterly bulk-sender engagement report | Report-only — mutates nothing, ever |
+
+All skills share the same operating philosophy: **move only clearly stale junk to Gmail Trash, never permanently delete, and never touch receipts, financial records, medical records, family messages, close-friend messages, sent mail, or drafts.** The `spam-cleanup` skill adds a Spam-folder-specific safety layer: rescue likely false positives to Inbox, trash only unmistakable junk, and leave promotions or ambiguous messages untouched.
+
+```mermaid
+flowchart LR
+    subgraph Interactive["Interactive skills"]
+        A[gmail-cleanup-starter]
+        B[gmail-safe-trash-starter]
+        C[spam-cleanup]
+        D[unstar-gmail-starter]
+        E[gmail-maintenance-loop-starter]
+    end
+    subgraph Unattended["Unattended skills"]
+        F[gmail-scheduled-sweep]
+        G[gmail-subscription-audit]
+    end
+    P[("config/profile.yaml<br/>config/retention.yaml")] --> F & G
+    E -->|orchestrates| A & B & C & D
+    G -->|recommendations| E
+    F & G & E --> L[("shared run-log +<br/>audit log")]
+```
 
 ---
 
@@ -99,11 +127,36 @@ Use this when the user specifically wants to review or clean the Gmail Spam fold
 
 The Spam workflow always previews proposed rescues and deletes, waits for confirmation, and learns from confirmed decisions with allowlist, denylist, and audit-log files.
 
+### `unstar-gmail-starter`
+
+Use this when the starred label has become noise. It buckets stars into removable (past events, delivered orders, promo pitches, old newsletters) versus always-kept (travel bookings, personal mail, financial/receipts/tax, reference notes, active action items), proposes the buckets, and unstars only what the user approves. It never deletes or archives — only the star is touched, and re-starring undoes everything.
+
+### `gmail-maintenance-loop-starter`
+
+Use this to run the cleanup/unstar skills on a recurring cadence with a persistent, append-only run-log so per-run and cumulative counts stay visible. It executes nothing destructive itself, and it owns the one outbound action in the project: an opt-in, previewed, metered unsubscribe pass with a mandatory never-list.
+
+### `gmail-scheduled-sweep`
+
+The unattended counterpart to the starters, built for cron-fired routines. It reads `config/profile.yaml` instead of asking setup questions, and it splits deletion into a two-phase pipeline: a **label pass** tags candidates with a dated `Cleanup/Pending-*` label and drafts a digest; a **commit pass** days later trashes only labels older than the review window — removing the label is the user's veto. It also runs a rescue-only spam sweep, monthly retention/Trash-audit passes, and enforces a hard per-run action cap.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Pending: label pass tags candidate
+    Pending --> Kept: you remove the label (veto)
+    Pending --> Trash: commit pass, after review window
+    Trash --> Kept: restore within ~30 days
+    Trash --> [*]: Gmail auto purges
+```
+
+### `gmail-subscription-audit`
+
+A report-only engagement audit of bulk senders: volume, read rate, replies, and time since last open, tiered into KEEP / REVIEW / CUT candidates. It changes nothing — recommendations flow to the maintenance loop's unsubscribe pass or the starters' filter pass for any actual action, which keeps it safe to schedule quarterly.
+
 ---
 
 ## User setup checklist
 
-Before first use, the assistant should ask for these answers in plain language:
+Before first use, the assistant should ask for these answers in plain language. For **unattended** runs the same answers live in [`config/profile.yaml`](config/profile.yaml) instead — scheduled agents can't ask questions, so `gmail-scheduled-sweep` refuses to run until that file is configured (and always refuses if the family/close-friends list is empty).
 
 1. **Family and close friends**  
    “Which email addresses should I treat as never-deleteable, no matter what subject they match?”
@@ -201,9 +254,28 @@ Copy one of the skill folders into your assistant skill directory:
 skills/gmail-cleanup-starter/
 skills/gmail-safe-trash-starter/
 skills/spam-cleanup/
+skills/unstar-gmail-starter/
+skills/gmail-maintenance-loop-starter/
+skills/gmail-scheduled-sweep/
+skills/gmail-subscription-audit/
 ```
 
-Use `gmail-cleanup-starter` when you want general cleanup wording. Use `gmail-safe-trash-starter` when the user benefits from stronger reassurance that the workflow is conservative and recoverable. Use `spam-cleanup` when the user wants to review Gmail Spam, rescue false positives, or trash only unmistakable junk already caught by Spam.
+Use `gmail-cleanup-starter` when you want general cleanup wording. Use `gmail-safe-trash-starter` when the user benefits from stronger reassurance that the workflow is conservative and recoverable. Use `spam-cleanup` when the user wants to review Gmail Spam, rescue false positives, or trash only unmistakable junk already caught by Spam. Use `unstar-gmail-starter` to prune the starred label. Use `gmail-maintenance-loop-starter` to run any of these on a cadence with a persistent tracker. The two unattended skills (`gmail-scheduled-sweep`, `gmail-subscription-audit`) additionally need `config/profile.yaml` filled in and routines wired up per [`AUTOMATION.md`](AUTOMATION.md).
+
+---
+
+## Automation and scheduling
+
+Full guide: [`AUTOMATION.md`](AUTOMATION.md) — janitor-session setup, cron routine table, copy-paste prompts, and the unattended safety invariants. The short version:
+
+```mermaid
+flowchart LR
+    R["Cron routines<br/>Mon label / Thu commit<br/>daily spam rescue<br/>monthly retention<br/>quarterly audit"] --> J["Persistent janitor session<br/>(Gmail connector authenticated)"]
+    J --> K["Labels, staged trash,<br/>digest drafts, audit log"]
+    K -.->|digest + veto window| U((You))
+```
+
+Scheduling never adds deletion power — unattended runs can label, trash *previously staged and un-vetoed* mail, rescue spam false positives, and draft reports. Filters and unsubscribes stay interactive-only.
 
 ---
 
