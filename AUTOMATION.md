@@ -86,6 +86,11 @@ Minimum trigger interval on most schedulers is hourly; everything here is far co
 | Spam rescue | `0 8 * * *` | "Use the gmail-scheduled-sweep skill and run the **spam-rescue** pass (rescue-only; queue deletes for review)." |
 | Retention + audit | `0 9 1 * *` | "Use the gmail-scheduled-sweep skill and run the **retention** pass, including the Trash audit and storage report." |
 | Subscription audit | `0 9 1 1,4,7,10 *` | "Use the gmail-subscription-audit skill and produce the quarterly engagement report." |
+| Nightly ETL | `0 3 * * *` | "Use the gmail-etl-nightly skill: sync Gmail metadata into the feature store (zero-mutation)." |
+| Weekly dashboard | `0 10 * * 5` | "Regenerate the health dashboard (`python3 dashboard/generate_dashboard.py` after running `eval/run_eval.py`, `analysis/age_gates.py`, `analysis/drift.py` on accumulated data) and attach/summarize it." |
+| Category discovery | `0 9 15 * *` | "Use the gmail-category-discovery skill and draft the monthly proposal digest (propose-only)." |
+
+The last three power the intelligence layer — see [`INTELLIGENCE.md`](INTELLIGENCE.md). They are all zero-mutation (read, compute, report), so they need no veto window.
 
 The label→commit gap (Mon→Thu) must stay **larger** than `sweep.review_window_days` in the profile (default 3), or the commit pass will correctly refuse to trash anything.
 

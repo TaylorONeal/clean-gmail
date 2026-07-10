@@ -1,0 +1,24 @@
+{
+  "configured": true,
+  "never_touch": {
+    "family_and_close_contacts": ["mom@example.com", "sam.oneal@example.com"],
+    "banks_and_financial": ["chase.com", "schwab.com"],
+    "insurers_and_medical": ["mychart.example.org", "kaiser.org"],
+    "active_products": ["github.com"],
+    "recurring_confirmations": ["frontdesk@yogastudio.example"],
+    "extra": []
+  },
+  "age_gates": {
+    "verification_codes": 7,
+    "email_verification_prompts": 30,
+    "shipping_notices": 60,
+    "calendar_invites": 14,
+    "unopened_promotions": 30,
+    "welcome_onboarding": 60,
+    "duplicate_digests": 30,
+    "expired_offers": 14
+  },
+  "sweep": {
+    "approved_promo_senders": ["deals@retailmail.example"]
+  }
+}

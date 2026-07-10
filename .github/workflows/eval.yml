@@ -1,0 +1,29 @@
+# Safety regression gate: no change to the engine, config, or golden set can
+# merge if it would stage a protected message or drop junk recall below the
+# floor. Analysis and dashboard scripts are smoke-tested so the offline
+# tooling never rots.
+name: eval
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  golden-set:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Golden-set safety eval
+        run: python3 eval/run_eval.py
+      - name: Survival analysis smoke test
+        run: python3 analysis/age_gates.py --demo
+      - name: Drift detection smoke test
+        run: python3 analysis/drift.py --demo
+      - name: Local store init smoke test
+        run: python3 db/init_local.py --path /tmp/cleanmail-ci.db
+      - name: Dashboard render smoke test
+        run: python3 dashboard/generate_dashboard.py --check

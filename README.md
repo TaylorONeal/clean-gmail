@@ -18,6 +18,8 @@ A safety-first collection of reusable Gmail cleanup skills, plus a config layer 
 |---|---|---|
 | `gmail-scheduled-sweep` | Weekly automated cleanup | Two-phase staged trash: label first, trash days later, human veto window in between |
 | `gmail-subscription-audit` | Quarterly bulk-sender engagement report | Report-only — mutates nothing, ever |
+| `gmail-etl-nightly` | Feeding the feature store with Gmail metadata | Zero-mutation, metadata-only, no bodies |
+| `gmail-category-discovery` | Finding junk types the rules miss | Propose-only — adoption is a CI-gated code change |
 
 All skills share the same operating philosophy: **move only clearly stale junk to Gmail Trash, never permanently delete, and never touch receipts, financial records, medical records, family messages, close-friend messages, sent mail, or drafts.** The `spam-cleanup` skill adds a Spam-folder-specific safety layer: rescue likely false positives to Inbox, trash only unmistakable junk, and leave promotions or ambiguous messages untouched.
 
@@ -276,6 +278,26 @@ flowchart LR
 ```
 
 Scheduling never adds deletion power — unattended runs can label, trash *previously staged and un-vetoed* mail, rescue spam false positives, and draft reports. Filters and unsubscribes stay interactive-only.
+
+---
+
+## The intelligence layer
+
+Full design: [`INTELLIGENCE.md`](INTELLIGENCE.md). On top of the rules engine sits a measured, CI-gated decision system — **local-first** (SQLite + JSONL, zero external setup; Supabase optional):
+
+- `engine/` — deterministic Rule Zero pre-filter + scored decisions with an abstention band. Action space is `{keep, review, stage}`; trash is structurally impossible at decision time.
+- `eval/` + `.github/workflows/eval.yml` — a golden set of adversarial traps (mom forwards a coupon; a receipt phrased like a shipping notice) run in CI on every PR. **A change that would stage a protected message cannot merge.**
+- `db/` — feature store: `python3 db/init_local.py` for the default SQLite backend; `db/supabase_schema.sql` if you opt into cloud.
+- `analysis/` — survival-analysis age gates (measured, not folklore) and Poisson burst detection for spam campaigns.
+- `dashboard/` — one-command static health dashboard: safety tiles, veto rate vs. SLO, learned gates, drift flags.
+
+```text
+python3 eval/run_eval.py                      # safety eval (CI runs this too)
+python3 db/init_local.py                      # local feature store, no signup
+python3 analysis/age_gates.py --demo          # learned age gates
+python3 analysis/drift.py --demo              # campaign detection
+python3 dashboard/generate_dashboard.py       # health dashboard
+```
 
 ---
 
