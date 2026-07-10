@@ -19,6 +19,20 @@ jobs:
           python-version: "3.11"
       - name: Golden-set safety eval
         run: python3 eval/run_eval.py
+      - name: Champion/challenger shadow comparison (default challenger must not regress)
+        run: python3 eval/shadow_compare.py
+      - name: Calibration guardrail smoke test (must refuse without --demo)
+        run: |
+          if python3 engine/calibrate.py; then
+            echo "calibrate.py should refuse to train without enough real data or --demo" >&2
+            exit 1
+          fi
+      - name: Calibration demo pipeline smoke test
+        run: python3 engine/calibrate.py --demo
+      - name: Uncertainty sampling smoke test
+        run: python3 analysis/active_learning.py sample --demo
+      - name: Veto postmortem smoke test
+        run: python3 analysis/active_learning.py postmortems --demo
       - name: Survival analysis smoke test
         run: python3 analysis/age_gates.py --demo
       - name: Drift detection smoke test

@@ -81,29 +81,59 @@ def rule_zero(message, profile):
 
 # ── Category matchers ────────────────────────────────────────────────────────
 # Each returns True if the message looks like the category, ignoring age;
-# the age gate is applied uniformly in match_category().
+# the age gate is applied uniformly in match_category(). Subject term tuples
+# are named and exposed via CATEGORY_SUBJECT_TERMS so other modules (e.g.
+# analysis/active_learning.py's veto postmortem) can reference the exact
+# matcher vocabulary instead of duplicating it.
 
 def _subject_has(message, *terms):
     subject = (message.get("subject") or "").lower()
     return any(t in subject for t in terms)
 
 
+VERIFICATION_CODE_TERMS = (
+    "verification code", "security code", "one-time", "otp", "2fa",
+    "login code", "sign-in code", "your code is", "authentication code",
+)
+EMAIL_VERIFICATION_TERMS = (
+    "confirm your email", "verify your email", "activate your account",
+    "confirm your account", "email verification",
+)
+SHIPPING_NOTICE_TERMS = (
+    "has shipped", "was delivered", "out for delivery", "shipping update",
+    "on its way", "track your package", "delivery update",
+)
+WELCOME_ONBOARDING_TERMS = (
+    "welcome to", "getting started", "get started with",
+    "complete your profile", "finish setting up", "your first steps",
+)
+EXPIRED_OFFER_TERMS = (
+    "offer ends", "sale ends", "expires today", "expires tonight",
+    "last chance", "final hours", "flash sale", "24 hours only",
+)
+
+# Category -> subject term vocabulary, for categories that match on subject
+# text alone. calendar_invites and unopened_promotions match on structured
+# fields instead and are intentionally absent here.
+CATEGORY_SUBJECT_TERMS = {
+    "verification_codes": VERIFICATION_CODE_TERMS,
+    "email_verification_prompts": EMAIL_VERIFICATION_TERMS,
+    "shipping_notices": SHIPPING_NOTICE_TERMS,
+    "welcome_onboarding": WELCOME_ONBOARDING_TERMS,
+    "expired_offers": EXPIRED_OFFER_TERMS,
+}
+
+
 def _is_verification_code(m):
-    return _subject_has(m, "verification code", "security code", "one-time",
-                        "otp", "2fa", "login code", "sign-in code",
-                        "your code is", "authentication code")
+    return _subject_has(m, *VERIFICATION_CODE_TERMS)
 
 
 def _is_email_verification(m):
-    return _subject_has(m, "confirm your email", "verify your email",
-                        "activate your account", "confirm your account",
-                        "email verification")
+    return _subject_has(m, *EMAIL_VERIFICATION_TERMS)
 
 
 def _is_shipping_notice(m):
-    return _subject_has(m, "has shipped", "was delivered", "out for delivery",
-                        "shipping update", "on its way", "track your package",
-                        "delivery update")
+    return _subject_has(m, *SHIPPING_NOTICE_TERMS)
 
 
 def _is_calendar_invite(m):
@@ -118,15 +148,11 @@ def _is_unopened_promotion(m, profile):
 
 
 def _is_welcome_onboarding(m):
-    return _subject_has(m, "welcome to", "getting started", "get started with",
-                        "complete your profile", "finish setting up",
-                        "your first steps")
+    return _subject_has(m, *WELCOME_ONBOARDING_TERMS)
 
 
 def _is_expired_offer(m):
-    return _subject_has(m, "offer ends", "sale ends", "expires today",
-                        "expires tonight", "last chance", "final hours",
-                        "flash sale", "24 hours only")
+    return _subject_has(m, *EXPIRED_OFFER_TERMS)
 
 
 def match_category(message, profile):
