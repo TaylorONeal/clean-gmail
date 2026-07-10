@@ -64,6 +64,17 @@ phishing:
   dead_alias: ""            # alias that only receives spam (strong signal), or ""
   mode: "suggest_first"     # suggest_first | report_only
 
+# ── Storage backend (intelligence layer) ────────────────────────────────────
+# "local" needs zero setup: a SQLite file + JSONL logs, created by
+# `python3 db/init_local.py`. "supabase" is optional — apply
+# db/supabase_schema.sql to a project first. Analysis scripts read the
+# local JSONL files in both modes.
+storage:
+  backend: "local"                    # local (default) | supabase
+  local_db: "data/cleanmail.db"
+  open_events: "data/open_events.jsonl"
+  daily_counts: "data/daily_counts.jsonl"
+
 # ── Logging ──────────────────────────────────────────────────────────────────
 logging:
   audit_log: "logs/audit-log.jsonl"     # append-only, one JSON object per action

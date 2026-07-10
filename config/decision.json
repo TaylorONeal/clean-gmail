@@ -1,0 +1,14 @@
+{
+  "thresholds": {"stage": 0.20, "review": 0.60},
+  "costs": {
+    "trash_junk": 1.0,
+    "trash_valuable": -50.0,
+    "keep_junk": -0.1,
+    "keep_valuable": 0.0
+  },
+  "slo": {
+    "protected_false_trash": 0,
+    "max_weekly_veto_rate": 0.02,
+    "breach_action": "demote_to_label_only"
+  }
+}

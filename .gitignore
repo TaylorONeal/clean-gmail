@@ -1,0 +1,13 @@
+# Generated artifacts — recreated by the scripts; don't commit runs
+eval/metrics.json
+analysis/recommended_gates.json
+analysis/drift_flags.json
+dashboard/index.html
+__pycache__/
+*.pyc
+
+# Local data: feature store, observations, and logs stay on your machine
+data/*
+!data/.gitkeep
+logs/*
+!logs/.gitkeep
