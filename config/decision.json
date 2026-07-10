@@ -1,4 +1,5 @@
 {
+  "scorer": "heuristic",
   "thresholds": {"stage": 0.20, "review": 0.60},
   "costs": {
     "trash_junk": 1.0,

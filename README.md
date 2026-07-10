@@ -285,14 +285,20 @@ Scheduling never adds deletion power — unattended runs can label, trash *previ
 
 Full design: [`INTELLIGENCE.md`](INTELLIGENCE.md). On top of the rules engine sits a measured, CI-gated decision system — **local-first** (SQLite + JSONL, zero external setup; Supabase optional):
 
-- `engine/` — deterministic Rule Zero pre-filter + scored decisions with an abstention band. Action space is `{keep, review, stage}`; trash is structurally impossible at decision time.
-- `eval/` + `.github/workflows/eval.yml` — a golden set of adversarial traps (mom forwards a coupon; a receipt phrased like a shipping notice) run in CI on every PR. **A change that would stage a protected message cannot merge.**
+- `engine/` — deterministic Rule Zero pre-filter + scored decisions with an abstention band. Action space is `{keep, review, stage}`; trash is structurally impossible at decision time. `engine/calibrate.py` fits an optional calibrated scorer from real outcomes, guardrailed to refuse training below 200 real examples.
+- `eval/` + `.github/workflows/eval.yml` — a 32-case golden set of adversarial traps (mom forwards a coupon; a receipt phrased like a shipping notice; four unprotected-but-valuable boundary cases) run in CI on every PR, plus `shadow_compare.py` for champion/challenger promotion decisions. **A change that would stage a protected message cannot merge.**
 - `db/` — feature store: `python3 db/init_local.py` for the default SQLite backend; `db/supabase_schema.sql` if you opt into cloud.
-- `analysis/` — survival-analysis age gates (measured, not folklore) and Poisson burst detection for spam campaigns.
+- `analysis/` — survival-analysis age gates (measured, not folklore), Poisson burst detection for spam campaigns, and `active_learning.py` for uncertainty sampling + veto postmortems.
 - `dashboard/` — one-command static health dashboard: safety tiles, veto rate vs. SLO, learned gates, drift flags.
+
+All of the above run out of the box on synthetic/demo data with zero setup — see [`INTELLIGENCE.md`](INTELLIGENCE.md) for the full design and maturity table.
 
 ```text
 python3 eval/run_eval.py                      # safety eval (CI runs this too)
+python3 eval/shadow_compare.py                # champion vs. challenger promotion check
+python3 engine/calibrate.py --demo            # calibration pipeline (demo; refuses real training <200 examples)
+python3 analysis/active_learning.py sample --demo        # uncertainty-sampled digest preview
+python3 analysis/active_learning.py postmortems --demo   # veto -> proposal diagnosis
 python3 db/init_local.py                      # local feature store, no signup
 python3 analysis/age_gates.py --demo          # learned age gates
 python3 analysis/drift.py --demo              # campaign detection

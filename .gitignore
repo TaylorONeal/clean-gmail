@@ -3,6 +3,9 @@ eval/metrics.json
 analysis/recommended_gates.json
 analysis/drift_flags.json
 dashboard/index.html
+config/decision_model.json
+config/decision_model.demo.json
+eval/_shadow_demo_model.json
 __pycache__/
 *.pyc
 
