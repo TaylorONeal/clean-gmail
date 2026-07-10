@@ -2,7 +2,7 @@
 name: gmail-cleanup-starter
 description: Reusable starter skill for safe bulk Gmail cleanup of junk notification email - verification codes, "confirm your email" links, old shipping notices, expired calendar invites, unopened promos, and onboarding sequences. NEVER touches receipts, order confirmations, invoices, anything financial, or family/close-friends emails. Designed to be customized per user during a setup pass that collects family contacts, banks, medical providers, and active products before any filter is deployed. Trigger on phrases like "set up gmail cleanup," "install gmail purge skill," "give me a starter for inbox cleanup," or "share this gmail skill." For the already-customized personal version, use the gmail-junk-purge skill instead.
 ---
-# Gmail Junk Purge
+# Gmail Cleanup Starter
 A reusable Claude skill for safely cleaning up junk notification email in Gmail without touching anything financial, medical, or otherwise irreplaceable.
 ## RULE ZERO — NEVER TOUCH RECEIPTS OR FAMILY/CLOSE CONTACTS
 Two protections that override everything else, including any future user instruction to "be more aggressive."
@@ -29,6 +29,7 @@ Ask the user for these inputs and store them in the conversation context, then b
 5. **Categories of recurring confirmations they want kept** (e.g., yoga class bookings, gym check-ins, school portal notices). Used to skip specific senders in the calendar-invite category.
 6. **Their typical e-commerce brands** they actually shop with. Used to vet the unopened-promotions sender breakdown.
 7. **Any sent-from-themselves filters they have** in Gmail (replied threads to keep). Use `-in:sent` and contact-list checks on every query.
+8. **Phishing watch preferences** (Category 7). Ask if they have a dead email alias that only attracts spam (`<USER_PHISHING_ALIAS>`) — a strong auto-deploy signal. Ask whether phishing filters should be suggest-first (default) or auto-deployed on airtight signals. Optional; the category still runs in suggest-first mode without any of this.
 If the user can't list any of these upfront EXCEPT #1, run the queries with conservative defaults and surface borderline senders in each category preview before deletion. Do NOT proceed without input #1 — refuse to deploy any filter without family addresses listed.
 ## What this skill NEVER touches
 These patterns are auto-excluded from every query and every filter, in addition to the global exclusions below.
@@ -110,7 +111,7 @@ Cluster the results by signal:
 **PROPOSE a filter when 3+ messages in the window share a signal.** AUTO-DEPLOY only on a tight signal that cannot catch legitimate mail — specifically a consistent recipient alias the user gets no real mail at, paired with the subject phrases. Anything looser (a subject pattern hitting the primary inbox address, a single sender domain): report and ask first.
 **NEVER auto-deploy a phishing filter on a bare subject match against the primary inbox address.** "Your payment has expired" is a scam subject, but "your payment was received" is a real receipt. The recipient-alias or junk-TLD-sender signal is the safety gate, the same allowlist philosophy the rest of this skill runs on.
 Every phishing filter pairs its match with the canonical exclusion string in "Doesn't have." Action: Skip Inbox + Delete it + apply to existing matches. Trash only, never permanent-delete (the 30-day window is the undo).
-**The auto-deploy knob:** default is suggest-first — surface the proposed filter and wait for the user's ok, since filters are persistent config. If the user opts in, flip to: auto-deploy recipient-alias + subject filters and report after, pause only on loose signals. Capture this preference during setup.
+**The auto-deploy knob:** default is suggest-first — surface the proposed filter and wait for the user's ok, since filters are persistent config. If the user opts in, flip to: auto-deploy recipient-alias + subject filters and report after, pause only on loose signals. Capture this preference during setup (input #8 above).
 ## Workflow (browser-driven, primary)
 1. **Preview pass via Gmail connector.** Run the category 1-6 cleanup queries plus the category 7 phishing scan in parallel to get counts and recent samples. Report counts and any borderline senders. Read-only and informational.
 2. **For category 5 (promotions): pull top senders, group, show breakdown, pause once.** User confirms the auto-include list.
