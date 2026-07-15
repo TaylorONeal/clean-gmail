@@ -2,15 +2,16 @@
 
 A small, safety-first collection of reusable Gmail cleanup skills. These skills are designed to help an assistant remove stale, low-value Gmail clutter while reassuring the user that important mail stays protected.
 
-The project currently contains three Gmail cleanup skills:
+The project currently contains four Gmail cleanup skills:
 
 | Skill | Best for | Personality |
 |---|---|---|
 | `gmail-cleanup-starter` | General inbox cleanup setup prompts | Friendly cleanup language |
 | `gmail-safe-trash-starter` | Users who want extra reassurance around deletion safety | Explicit “safe trash” framing |
 | `spam-cleanup` | Reviewing Gmail Spam for false positives and obvious junk | Three-bucket rescue / delete / leave workflow |
+| `unstar-gmail` | Pruning a bloated starred label without losing the stars that matter | Approval-gated, star-only, fully reversible |
 
-All three skills share the same operating philosophy: **move only clearly stale junk to Gmail Trash, never permanently delete, and never touch receipts, financial records, medical records, family messages, close-friend messages, sent mail, or drafts.** The `spam-cleanup` skill adds a Spam-folder-specific safety layer: rescue likely false positives to Inbox, trash only unmistakable junk, and leave promotions or ambiguous messages untouched.
+The three trash-oriented skills share the same operating philosophy: **move only clearly stale junk to Gmail Trash, never permanently delete, and never touch receipts, financial records, medical records, family messages, close-friend messages, sent mail, or drafts.** The `spam-cleanup` skill adds a Spam-folder-specific safety layer: rescue likely false positives to Inbox, trash only unmistakable junk, and leave promotions or ambiguous messages untouched. The `unstar-gmail` skill is gentler still — it only ever removes a star (never deletes, archives, or moves anything), so every action is reversible with a single click.
 
 ---
 
@@ -98,6 +99,23 @@ Use this when the user specifically wants to review or clean the Gmail Spam fold
 | LEAVE | Do nothing | Promotions, foreign-language bulk without clear malicious signals, or anything ambiguous |
 
 The Spam workflow always previews proposed rescues and deletes, waits for confirmation, and learns from confirmed decisions with allowlist, denylist, and audit-log files.
+
+### `unstar-gmail`
+
+Use this when the user's **starred** label has become a junk drawer — newsletters, expired deal emails, and delivered-order notices piled in alongside the travel bookings, receipts, and personal threads they actually want to find later. Unlike the other skills, it never trashes anything: it only removes the star, so every action is undone by re-starring.
+
+It sorts stars into removable buckets and protected keeps:
+
+| Bucket | Action | Examples |
+|---|---|---|
+| Past events | Unstar | Webinar/class/appointment reminders for dates already passed |
+| Delivered orders | Unstar | “Delivered:” notices, completed repairs (item arrived, nothing to track) |
+| Promo deals | Unstar | Marketing blasts, “sell your tickets,” expiring-discount campaigns |
+| Content newsletters | Unstar (confirm each source) | Read-later newsletters the user isn’t actively subscribed to |
+| Stale welcomes | Unstar (only when clearly old) | Onboarding / “thanks for visiting” from studios and courses long since ended |
+| **Rule Zero keeps** | **Never touch** | Travel/lodging bookings, personal correspondence, financial/receipts/tax/gift cards, reference notes, active action items |
+
+The workflow is approval-gated: it samples `is:starred`, proposes the buckets with real examples, and waits for the user to pick which to remove (plus a `is:starred older_than:90d` sweep for stale stars). Because the Gmail connector is read-only and Gmail has no bulk “remove star” action, it drives the Gmail UI via Chrome MCP with sender-scoped searches so a bulk pass can never collide with the Rule Zero keeps.
 
 ---
 
@@ -201,9 +219,10 @@ Copy one of the skill folders into your assistant skill directory:
 skills/gmail-cleanup-starter/
 skills/gmail-safe-trash-starter/
 skills/spam-cleanup/
+skills/unstar-gmail/
 ```
 
-Use `gmail-cleanup-starter` when you want general cleanup wording. Use `gmail-safe-trash-starter` when the user benefits from stronger reassurance that the workflow is conservative and recoverable. Use `spam-cleanup` when the user wants to review Gmail Spam, rescue false positives, or trash only unmistakable junk already caught by Spam.
+Use `gmail-cleanup-starter` when you want general cleanup wording. Use `gmail-safe-trash-starter` when the user benefits from stronger reassurance that the workflow is conservative and recoverable. Use `spam-cleanup` when the user wants to review Gmail Spam, rescue false positives, or trash only unmistakable junk already caught by Spam. Use `unstar-gmail` when the user wants to prune a bloated starred label without risking the stars that matter.
 
 ---
 
