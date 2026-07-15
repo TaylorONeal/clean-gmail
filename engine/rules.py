@@ -34,13 +34,22 @@ def sender_domain(addr):
 
 
 def _sender_matches(addr, patterns):
+    """Match a sender against address/domain patterns on real boundaries only.
+
+    A pattern matches when it is the exact full address, the exact sending
+    domain, or a parent domain of the sending domain (true subdomain boundary).
+    A plain substring test is deliberately avoided: it would let a lookalike
+    like ``deals@retailmail.example.evil.com`` match the pattern
+    ``retailmail.example``, which for ``approved_promo_senders`` would widen the
+    unattended allowlist to attacker-controlled domains.
+    """
     addr = (addr or "").lower()
     dom = sender_domain(addr)
     for p in patterns:
         p = (p or "").lower().strip()
         if not p:
             continue
-        if p == addr or p == dom or dom.endswith("." + p) or p in addr:
+        if p == addr or p == dom or dom.endswith("." + p):
             return p
     return None
 
@@ -137,7 +146,11 @@ def _is_shipping_notice(m):
 
 
 def _is_calendar_invite(m):
-    return bool(m.get("has_ics")) and bool(m.get("event_in_past", True))
+    # Only a *past* event is safe to sweep. When event-date metadata is missing
+    # we must not assume the event is past — a future or unknown-date invite is
+    # still live mail. Default to False (conservative) so missing metadata keeps
+    # the invite out of the candidate set rather than auto-staging it.
+    return bool(m.get("has_ics")) and m.get("event_in_past") is True
 
 
 def _is_unopened_promotion(m, profile):
