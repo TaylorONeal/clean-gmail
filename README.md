@@ -1,6 +1,6 @@
 # Clean Gmail Skills
 
-A safety-first collection of reusable Gmail cleanup skills, plus a config layer and scheduling guide for running them unattended. These skills are designed to help an assistant remove stale, low-value Gmail clutter while reassuring the user that important mail stays protected.
+A safety-first collection of reusable Gmail cleanup skills, plus a config layer and scheduling guide for running them unattended. These skills are designed to help an assistant remove stale, low-value Gmail clutter — and give the user a handle on recurring costs — while reassuring the user that important mail stays protected.
 
 **Interactive skills** (a human is present and approving):
 
@@ -10,6 +10,7 @@ A safety-first collection of reusable Gmail cleanup skills, plus a config layer 
 | `gmail-safe-trash-starter` | Users who want extra reassurance around deletion safety | Explicit “safe trash” framing |
 | `spam-cleanup` | Reviewing Gmail Spam for false positives and obvious junk | Three-bucket rescue / delete / leave workflow |
 | `unstar-gmail-starter` | Pruning stale stars while protecting the ones that matter | Approval-gated, star-only, fully reversible |
+| `subscription-tracker` | Finding, tracking, and cutting recurring subscription charges | Money-and-trust, action-first review |
 | `gmail-maintenance-loop-starter` | Running the skills above on a cadence with a persistent run-log | Orchestration + metering, opt-in unsubscribe pass |
 
 **Unattended skills** (fired by scheduled routines, no human in the loop — see [`AUTOMATION.md`](AUTOMATION.md)):
@@ -21,7 +22,9 @@ A safety-first collection of reusable Gmail cleanup skills, plus a config layer 
 | `gmail-etl-nightly` | Feeding the feature store with Gmail metadata | Zero-mutation, metadata-only, no bodies |
 | `gmail-category-discovery` | Finding junk types the rules miss | Propose-only — adoption is a CI-gated code change |
 
-All skills share the same operating philosophy: **move only clearly stale junk to Gmail Trash, never permanently delete, and never touch receipts, financial records, medical records, family messages, close-friend messages, sent mail, or drafts.** The `spam-cleanup` skill adds a Spam-folder-specific safety layer: rescue likely false positives to Inbox, trash only unmistakable junk, and leave promotions or ambiguous messages untouched.
+Most skills share the same operating philosophy: **move only clearly stale junk to Gmail Trash, never permanently delete, and never touch receipts, financial records, medical records, family messages, close-friend messages, sent mail, or drafts.** The `spam-cleanup` skill adds a Spam-folder-specific safety layer: rescue likely false positives to Inbox, trash only unmistakable junk, and leave promotions or ambiguous messages untouched.
+
+The `subscription-tracker` skill is read-only toward mail — it never deletes or moves anything. Instead it *reads* those same receipts and renewal notices (the ones Rule Zero protects) to build a living Subscription Tracker in the user's cloud storage and warn them before money leaves their account. It shares the collection's core value: honesty over the appearance of completeness.
 
 ```mermaid
 flowchart LR
@@ -30,6 +33,7 @@ flowchart LR
         B[gmail-safe-trash-starter]
         C[spam-cleanup]
         D[unstar-gmail-starter]
+        S[subscription-tracker]
         E[gmail-maintenance-loop-starter]
     end
     subgraph Unattended["Unattended skills"]
@@ -152,7 +156,31 @@ stateDiagram-v2
 
 ### `gmail-subscription-audit`
 
-A report-only engagement audit of bulk senders: volume, read rate, replies, and time since last open, tiered into KEEP / REVIEW / CUT candidates. It changes nothing — recommendations flow to the maintenance loop's unsubscribe pass or the starters' filter pass for any actual action, which keeps it safe to schedule quarterly.
+A report-only engagement audit of bulk senders: volume, read rate, replies, and time since last open, tiered into KEEP / REVIEW / CUT candidates. It changes nothing — recommendations flow to the maintenance loop's unsubscribe pass or the starters' filter pass for any actual action, which keeps it safe to schedule quarterly. (Distinct from `subscription-tracker` below: this audits *which bulk senders* to unsubscribe from by engagement, while the tracker follows *recurring paid charges* and spend.)
+
+### `subscription-tracker`
+
+Use this when the user wants to find, list, audit, track, or cut recurring subscription charges — including when they never say the word "subscription" but clearly want a handle on recurring costs, converting free trials, renewals, or monthly spend. Unlike the cleanup skills, it never deletes or moves mail; it *reads* receipts and renewal notices to build a picture of what the user pays for, keeps that picture current in the user's cloud storage, and warns them before a charge hits.
+
+Its correctness rests on one idea: a subscription has **two independent dimensions**, tracked in two separate columns.
+
+| Dimension | Question | Values |
+|---|---|---|
+| Auto-Renew | Will it charge again? | On / Off / Verify |
+| Status | Does the user still have access right now? | Active / Ended / Verify |
+
+Collapsing these into a single "active vs inactive" flag is what breaks most subscription lists: a **canceled-but-still-active** sub (the user hit cancel, so no future charge, but access runs to period end) is neither. A single `Next Event` date column then reads as a charge date when Auto-Renew is On, an access-end date when it's Off but still Active, and blank once Ended.
+
+Design highlights:
+
+| Concern | How the skill handles it |
+|---|---|
+| Storage | Writes a **new dated snapshot** into one cloud folder each run rather than editing in place — because most Drive-style connectors can create/read but not edit or delete. This also yields a price-history trail. |
+| Honesty | Never invents a price. Unknown amounts are marked `VERIFY` and kept out of spend totals; suspected-but-unproven subscriptions are flagged rather than asserted. |
+| Weekly review | Leads with **CHARGING SOON** (Auto-Renew On, within 14 days) and keeps it separate from **EXPIRING SOON** (already canceled, no action), so alerts stay trustworthy. |
+| Automation | Can be wired to a weekly scheduled task that refreshes the tracker on its own. |
+
+The skill ships with `scripts/build_tracker.py` (renders and validates a snapshot), `references/vendor-patterns.md` (a generic search net plus the aggregator senders — Apple, Google Play — to always check), and `references/scheduled-task.md` (a self-contained weekly task prompt).
 
 ---
 
@@ -257,12 +285,13 @@ skills/gmail-cleanup-starter/
 skills/gmail-safe-trash-starter/
 skills/spam-cleanup/
 skills/unstar-gmail-starter/
+skills/subscription-tracker/
 skills/gmail-maintenance-loop-starter/
 skills/gmail-scheduled-sweep/
 skills/gmail-subscription-audit/
 ```
 
-Use `gmail-cleanup-starter` when you want general cleanup wording. Use `gmail-safe-trash-starter` when the user benefits from stronger reassurance that the workflow is conservative and recoverable. Use `spam-cleanup` when the user wants to review Gmail Spam, rescue false positives, or trash only unmistakable junk already caught by Spam. Use `unstar-gmail-starter` to prune the starred label. Use `gmail-maintenance-loop-starter` to run any of these on a cadence with a persistent tracker. The two unattended skills (`gmail-scheduled-sweep`, `gmail-subscription-audit`) additionally need `config/profile.yaml` filled in and routines wired up per [`AUTOMATION.md`](AUTOMATION.md).
+Use `gmail-cleanup-starter` when you want general cleanup wording. Use `gmail-safe-trash-starter` when the user benefits from stronger reassurance that the workflow is conservative and recoverable. Use `spam-cleanup` when the user wants to review Gmail Spam, rescue false positives, or trash only unmistakable junk already caught by Spam. Use `unstar-gmail-starter` to prune the starred label. Use `subscription-tracker` when the user wants to find, track, or cut recurring subscription charges and get warned before renewals bill. Use `gmail-maintenance-loop-starter` to run any of these on a cadence with a persistent tracker. The two unattended skills (`gmail-scheduled-sweep`, `gmail-subscription-audit`) additionally need `config/profile.yaml` filled in and routines wired up per [`AUTOMATION.md`](AUTOMATION.md).
 
 ---
 
@@ -304,7 +333,6 @@ python3 analysis/age_gates.py --demo          # learned age gates
 python3 analysis/drift.py --demo              # campaign detection
 python3 dashboard/generate_dashboard.py       # health dashboard
 ```
-
 ---
 
 ## Maintainer notes and improvement review
@@ -316,6 +344,7 @@ The skill content has been reviewed for clarity and consistency. Recommended ong
 - Preserve the required setup question for family and close friends.
 - Keep phishing behavior suggest-first unless the matching signal is extremely narrow.
 - Treat welcome/onboarding filters as the highest collateral-risk category because body text may contain order or subscription details.
+- Keep `subscription-tracker` read-only toward mail (it should never delete or move messages), preserve the two-column Auto-Renew/Status model, and never let guessed prices leak into spend totals — unknowns stay `VERIFY`.
 - Add new “lessons learned” whenever a real deployment finds a borderline pattern.
 
 ---
