@@ -1,0 +1,134 @@
+# unsubscribe-config.yaml — source of truth for the gmail-unsubscribe skill.
+# The recurring run reads this, applies it, and appends results to queue.md.
+# Edit any section by hand; the run respects your edits. Written during the
+# setup pass; never edited automatically except to append learned keep notes.
+
+version: 1
+
+account:
+  email: YOUR_EMAIL@gmail.com
+  setup_completed: FILL_IN_DATE          # YYYY-MM-DD
+  capabilities:                          # what the agent can actually do here
+    search_mail: true                    # required
+    read_headers: true                   # required (List-Unsubscribe / List-Id)
+    send_mail: false                     # enables mailto: unsubscribes
+    browser: false                       # enables https unsubscribe forms + Gmail UI
+    create_filters: true                 # required for the filter guarantee
+
+run:
+  cadence: weekly                        # weekly | daily
+  cap_per_run: 40                        # max SENDERS actioned per run (hard ceiling)
+  dry_run_first: true                    # first live run is propose-only
+  search_window_days: 90                 # how far back the census looks
+  census_query: 'category:promotions OR "unsubscribe" newer_than:90d'
+
+# Method ladder — order the run tries to unsubscribe. Body links are NEVER used;
+# there is no `body_link` entry by design. Header-less senders fall through to
+# `fallback_no_safe_method`.
+method_ladder:
+  - one_click                            # RFC 8058 List-Unsubscribe-Post, https POST. Safest.
+  - mailto                               # List-Unsubscribe mailto:  (needs send_mail)
+  - https_form                           # List-Unsubscribe https URL (needs browser + recognized sender)
+fallback_no_safe_method: block_and_filter   # spam / unrecognized / no header
+
+# Every unsubscribe is paired with a filter. Per-lane action:
+#   archive_label = skip inbox + apply label (safe default)
+#   trash         = send to Trash, recoverable 30 days (aggressive)
+filter_defaults:
+  action: archive_label
+  label: "Unsubscribed"
+  aggressive_action: trash
+  also_apply_to_existing: true           # "Also apply to N matching conversations"
+
+# ---------------------------------------------------------------------------
+# PROTECTED SENDERS — never unsubscribed, blocked, filtered, or proposed.
+# Exact domain match protects silently; a fuzzy name match goes to the review
+# lane ("possible protected sender — confirm"), never auto-actioned.
+protected:
+  rule_zero_locks:                       # category hard locks — always on
+    - receipts_orders_invoices
+    - banking_finance_statements
+    - security_signin_2fa_password
+    - account_service_notices
+    - calendar_invites
+    - travel_booking_itinerary
+    - medical
+    - tax_legal
+    - real_people                        # anyone the user has emailed (sent-mail derived)
+  keyword_locks:                         # terms in subject/sender that force keep
+    - receipt
+    - invoice
+    - order
+    - statement
+    - refund
+    - "security alert"
+    - "sign-in"
+    - verify
+    - "verification code"
+    - password
+    - "2fa"
+    - booking
+    - itinerary
+    - tax
+  domain_locks:                          # financial/transactional domains, exact match
+    - paypal.com
+    - stripe.com
+    - amazon.com
+    - apple.com
+    - chase.com
+    - mychart
+    # add the user's banks, insurers, medical providers at setup
+  domains:                               # user-specific, protected silently
+    - clientdomain.com — source: sent-mail
+    - example-bank.com — source: manual
+  correspondents:                        # names -> fuzzy match -> review, not auto-keep
+    - "Full Name — source: sent-mail"
+
+# ---------------------------------------------------------------------------
+# KEEP LANES — lists the user WANTS. Confirmed interactively at setup.
+keep_lanes:
+  - name: newsletters_i_read
+    match: [substack.com, "author@example.com"]
+  - name: a_retailer_i_use
+    match: [thatstore.com]
+  - name: work_industry_updates
+    match: []
+  # Protective notes learned from wrong cuts get appended here over time.
+  learned_keep_notes: []
+
+# ---------------------------------------------------------------------------
+# CUT RULES — unsubscribe + filter if a sender matches (after protection +
+# method check). Disable any rule by setting enabled: false.
+cut_rules:
+  - id: retail_promos
+    desc: "Sales/coupon/cart-abandon blasts you never open"
+    enabled: true
+    filter_action: archive_label
+  - id: cold_sales
+    desc: "Outbound sales sequences and drip funnels"
+    enabled: true
+    filter_action: trash
+  - id: event_webinar_spam
+    desc: "Webinar/event invites and re-engagement 'we miss you'"
+    enabled: true
+    filter_action: archive_label
+  - id: off_interest_newsletters
+    desc: "Newsletters not in any keep lane"
+    enabled: true
+    filter_action: archive_label
+  - id: dead_digests
+    desc: "Content-platform digests you never click through"
+    enabled: true
+    filter_action: archive_label
+  - id: unrecognized_bulk
+    desc: "Valid-header bulk senders you can't place (real people -> review)"
+    enabled: true
+    filter_action: archive_label
+
+safety:
+  stop_on_error: true                    # auth prompt / API error / anything odd -> stop + report
+  bias: keep                             # when uncertain, do not act
+  never_unsubscribe_from_spam: true      # spam is blocked, never unsubscribed (no address confirmation)
+  never_click_body_links: true           # only the List-Unsubscribe header is used
+  setup_never_unsubscribes: true
+  trash_only: true                       # filters Trash or label; never permanent-delete

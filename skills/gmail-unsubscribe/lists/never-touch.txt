@@ -1,0 +1,11 @@
+# gmail-unsubscribe never-touch list — senders/domains that are ALWAYS protected.
+# One entry per line. An entry is a full address (name@example.com) or a bare
+# domain (example.com); a domain matches any address at that domain.
+# Lines starting with '#' are comments. The setup pass and learning loop append
+# confirmed protections here. This list is redundant with the `protected` block
+# in unsubscribe-config.yaml on purpose — defense in depth. When in doubt, add.
+#
+# Examples (delete and replace with your own):
+# chase.com
+# mychart.org
+# mom@example.com
