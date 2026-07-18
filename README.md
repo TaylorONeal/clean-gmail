@@ -2,15 +2,16 @@
 
 A small, safety-first collection of reusable Gmail cleanup skills. These skills are designed to help an assistant remove stale, low-value Gmail clutter while reassuring the user that important mail stays protected.
 
-The project currently contains three Gmail cleanup skills:
+The project currently contains four Gmail cleanup skills:
 
 | Skill | Best for | Personality |
 |---|---|---|
 | `gmail-cleanup-starter` | General inbox cleanup setup prompts | Friendly cleanup language |
 | `gmail-safe-trash-starter` | Users who want extra reassurance around deletion safety | Explicit “safe trash” framing |
 | `spam-cleanup` | Reviewing Gmail Spam for false positives and obvious junk | Three-bucket rescue / delete / leave workflow |
+| `gmail-unsubscribe` | Getting *off* unwanted email lists at the source | Per-sender census; unsubscribe-then-filter |
 
-All three skills share the same operating philosophy: **move only clearly stale junk to Gmail Trash, never permanently delete, and never touch receipts, financial records, medical records, family messages, close-friend messages, sent mail, or drafts.** The `spam-cleanup` skill adds a Spam-folder-specific safety layer: rescue likely false positives to Inbox, trash only unmistakable junk, and leave promotions or ambiguous messages untouched.
+All four skills share the same operating philosophy: **move only clearly stale junk to Gmail Trash, never permanently delete, and never touch receipts, financial records, medical records, family messages, close-friend messages, sent mail, or drafts.** The `spam-cleanup` skill adds a Spam-folder-specific safety layer: rescue likely false positives to Inbox, trash only unmistakable junk, and leave promotions or ambiguous messages untouched. The `gmail-unsubscribe` skill works one level upstream: instead of clearing mail that already arrived, it stops future mail at the source by unsubscribing from unwanted lists — deciding once per sender, using only the standard `List-Unsubscribe` header (never a scraped body link), and pairing every unsubscribe with a filter so the mail stops even when the unsubscribe is ignored.
 
 ---
 
@@ -98,6 +99,19 @@ Use this when the user specifically wants to review or clean the Gmail Spam fold
 | LEAVE | Do nothing | Promotions, foreign-language bulk without clear malicious signals, or anything ambiguous |
 
 The Spam workflow always previews proposed rescues and deletes, waits for confirmation, and learns from confirmed decisions with allowlist, denylist, and audit-log files.
+
+### `gmail-unsubscribe`
+
+Use this when the user wants to stop unwanted email lists at the source rather than repeatedly clearing what they send — "unsubscribe from these," "get me off these lists," "too many marketing emails," "clean up my newsletters." It works per **sender**, not per message: it builds a census of list mail grouped by sender, buckets each keep / cut / review, and for each cut sender unsubscribes through the standard `List-Unsubscribe` header, then creates a paired Gmail filter so the mail stops even if the unsubscribe is ignored.
+
+| Path | Action | When to use |
+|---|---|---|
+| UNSUBSCRIBE + FILTER | Header one-click or mailto, then archive/label or Trash filter | Recognized bulk senders with a valid `List-Unsubscribe` header |
+| BLOCK + FILTER | Block sender, Trash filter, no unsubscribe attempt | Spam, unrecognized junk, or no header (unsubscribing would confirm a live address) |
+| REVIEW | Send to "Needs your eyes" | Real people, mixed transactional/marketing domains, or anything ambiguous |
+| KEEP | Do nothing | Protected senders, Rule Zero categories, and confirmed keep lanes |
+
+It never clicks an in-body unsubscribe link (the phishing surface), never touches transactional or personal mail (Rule Zero), caps senders per run, and runs propose-only on the first pass. Config lives in `unsubscribe-config.yaml`; history and pending decisions live in a queue file.
 
 ---
 

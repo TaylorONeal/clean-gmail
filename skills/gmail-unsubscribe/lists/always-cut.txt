@@ -1,0 +1,10 @@
+# gmail-unsubscribe always-cut list — senders/domains to unsubscribe + filter on
+# sight (after the protection check still runs — Rule Zero always wins).
+# One entry per line: full address or bare domain. '#' starts a comment.
+# The learning loop appends here when you confirm a sender is unwanted junk.
+# A sender here is still checked against never-touch first; if it somehow matches
+# both, protection wins and the sender is left alone and flagged for you.
+#
+# Examples (delete and replace with your own):
+# deals@spammyretailer.com
+# marketing.example.com
