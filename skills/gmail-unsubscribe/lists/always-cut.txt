@@ -1,9 +1,19 @@
 # gmail-unsubscribe always-cut list — senders/domains to unsubscribe + filter on
 # sight (after the protection check still runs — Rule Zero always wins).
 # One entry per line: full address or bare domain. '#' starts a comment.
+# An entry is a full address (name@example.com) or a bare
+# domain (example.com). A domain matches that exact domain and its subdomains,
+# on DNS label boundaries only: `example.com` matches `mail.example.com` and
+# does NOT match `notexample.com`, `example.community`, or
+# `example.com.evil.ru`. Never substring-match here — lookalike domains are
+# cheap to register and substring matching is how they get treated as trusted.
+#
 # The learning loop appends here when you confirm a sender is unwanted junk.
 # A sender here is still checked against never-touch first; if it somehow matches
 # both, protection wins and the sender is left alone and flagged for you.
+# Being on this list does NOT bypass the unsubscribe gate: a sender here that
+# fails authentication or unsubscribe-target alignment is blocked + filtered,
+# never unsubscribed.
 #
 # Examples (delete and replace with your own):
 # deals@spammyretailer.com
