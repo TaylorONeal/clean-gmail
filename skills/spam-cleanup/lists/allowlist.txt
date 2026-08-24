@@ -1,4 +1,16 @@
 # Spam-cleanup allowlist — senders/domains to ALWAYS rescue from Spam.
-# One entry per line. An entry is a full address (name@example.com) or a bare
-# domain (example.com). A domain matches any address at that domain.
-# Lines starting with '#' are comments. The skill appends confirmed rescues here.
+# One entry per line.
+# An entry is a full address (name@example.com) or a bare
+# domain (example.com). A domain matches that exact domain and its subdomains,
+# on DNS label boundaries only: `example.com` matches `mail.example.com` and
+# does NOT match `notexample.com`, `example.community`, or
+# `example.com.evil.ru`. Never substring-match here — lookalike domains are
+# cheap to register and substring matching is how they get treated as trusted.
+# Lines starting with '#' are comments.
+#
+# The skill appends here only on your explicit, per-entry approval, and only for
+# a sender that BOTH authenticates (dkim/dmarc pass, aligned to the From domain)
+# AND has prior two-way correspondence. A single convincing inbound message is
+# never enough — an allowlisted domain auto-rescues out of Spam forever, so a
+# poisoned entry here is a durable compromise. Prefer a full address over a
+# domain when the relationship is with a person rather than a service.
