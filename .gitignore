@@ -1,0 +1,14 @@
+# Filled-in personal config. Once completed, unsubscribe-config.yaml lists the
+# user's banks, insurers, medical providers, family addresses, and the domains
+# they do business with — a social-engineering profile in a single file. The
+# template in skills/gmail-unsubscribe/ is tracked; user copies are not.
+unsubscribe-config.yaml
+!skills/gmail-unsubscribe/unsubscribe-config.yaml
+
+# Run artifacts: audit trails and review queues contain real senders and subjects.
+**/lists/audit.log
+queue.md
+scheduled-prompt.txt
+
+# Populated allow/deny lists are per-user. The commented templates are tracked;
+# force-add a populated one only if you really mean to publish those addresses.
