@@ -12,3 +12,4 @@
 - [Scheduling](../skills/gmail-unsubscribe/scheduled-task.md): quiet census prompt.
 - [Installer](../scripts/install.py): self-contained, non-overwriting bundles.
 - [Tests](../tests/test_install.py): installation and reference checks.
+- [Public package boundary](../AGENTS.md): separation from personal versions and publication checks.

@@ -17,6 +17,15 @@ and exact rules they approve. It does not claim better spam detection than Gmail
 | [spam-cleanup](skills/spam-cleanup/SKILL.md) | Find potentially wanted mail in Spam; propose rescue or Trash |
 | [gmail-unsubscribe](skills/gmail-unsubscribe/SKILL.md) | Review lists and execute explicitly approved safe requests |
 
+## Public and personal versions stay separate
+
+This repository contains reusable instructions and empty templates only. Keep
+personal versions in a separate private project, with separate working trees,
+state, schedules and commits. Public updates never import a user's profile or
+replace a personal installation. The installer copies only explicitly listed
+package files; extra local notes, profiles and journals are excluded. See
+[the repository boundary](AGENTS.md).
+
 ## Personal by default
 
 Start with “Preview my Gmail clutter and suggest what I can safely automate.”

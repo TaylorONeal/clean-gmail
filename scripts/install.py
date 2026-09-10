@@ -7,12 +7,21 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 SHARED = ("SECURITY.md", "PERSONALIZATION.md")
+# Deliberate distribution manifest: never pick up local profiles or journals.
+BUNDLE_FILES = {
+    "gmail-cleanup-starter": ("SKILL.md",),
+    "gmail-safe-trash-starter": ("SKILL.md",),
+    "spam-cleanup": ("SKILL.md", "lists/allowlist.txt", "lists/denylist.txt"),
+    "gmail-unsubscribe": (
+        "SKILL.md", "README.md", "unsubscribe-config.yaml", "scheduled-task.md",
+        "queue-template.md", "lists/always-cut.txt", "lists/never-touch.txt",
+    ),
+}
 
 
 def install(destination: Path, names: list[str]) -> list[Path]:
     """Bundle references in a temporary directory, then publish new folders."""
-    available = {path.name for path in (ROOT / "skills").iterdir()
-                 if path.is_dir() and (path / "SKILL.md").is_file()}
+    available = set(BUNDLE_FILES)
     if not names or len(names) != len(set(names)) or not set(names) <= available:
         raise ValueError("Choose distinct skill names from this repository.")
     destination = destination.expanduser().resolve()
@@ -28,11 +37,25 @@ def install(destination: Path, names: list[str]) -> list[Path]:
     with tempfile.TemporaryDirectory(prefix=".clean-gmail-", dir=destination) as staging:
         for name in names:
             bundle = Path(staging) / name
-            shutil.copytree(ROOT / "skills" / name, bundle)
+            bundle.mkdir()
+            for relative in BUNDLE_FILES[name]:
+                source = ROOT / "skills" / name / relative
+                # Reject links, including a linked parent, rather than copying
+                # private content from outside the intended source tree.
+                if source.is_symlink() or any(parent.is_symlink()
+                                             for parent in source.parents
+                                             if ROOT in parent.parents):
+                    raise ValueError(f"Symlink source is not distributable: {relative}")
+                target = bundle / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(source, target)
             references = bundle / "references"
             references.mkdir(exist_ok=True)
             for filename in SHARED:
-                shutil.copyfile(ROOT / filename, references / filename)
+                source = ROOT / filename
+                if source.is_symlink():
+                    raise ValueError(f"Symlink reference is not distributable: {filename}")
+                shutil.copyfile(source, references / filename)
             entrypoint = bundle / "SKILL.md"
             content = entrypoint.read_text()
             for filename in SHARED:
@@ -54,8 +77,7 @@ def main() -> None:
     parser.add_argument("--skill", action="append", dest="names",
                         help="Skill to install (repeatable); default: all four")
     args = parser.parse_args()
-    names = args.names or sorted(path.name for path in (ROOT / "skills").iterdir()
-                                if path.is_dir() and (path / "SKILL.md").is_file())
+    names = args.names or sorted(BUNDLE_FILES)
     try:
         for target in install(args.dest, names):
             print(f"Installed {target}")
