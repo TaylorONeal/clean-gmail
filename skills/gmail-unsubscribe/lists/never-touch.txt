@@ -1,17 +1,4 @@
-# gmail-unsubscribe never-touch list — senders/domains that are ALWAYS protected.
-# One entry per line.
-# An entry is a full address (name@example.com) or a bare
-# domain (example.com). A domain matches that exact domain and its subdomains,
-# on DNS label boundaries only: `example.com` matches `mail.example.com` and
-# does NOT match `notexample.com`, `example.community`, or
-# `example.com.evil.ru`. Never substring-match here — lookalike domains are
-# cheap to register and substring matching is how they get treated as trusted.
-# Match against the AUTHENTICATED sending domain (DKIM d=) where one exists.
-# Lines starting with '#' are comments. The setup pass and learning loop append
-# confirmed protections here. This list is redundant with the `protected` block
-# in unsubscribe-config.yaml on purpose — defense in depth. When in doubt, add.
-#
-# Examples (delete and replace with your own):
-# chase.com
-# mychart.org
-# mom@example.com
+# Legacy preference template. Protected sender preferences; preservation is not identity trust.
+# Store personal entries outside the checkout. Migrate explicitly confirmed
+# entries to the shared per-account profile; prefer exact addresses.
+# Domain comparisons require DNS label boundaries. Protection wins conflicts.
