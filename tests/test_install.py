@@ -2,6 +2,8 @@
 import importlib.util
 from pathlib import Path
 import re
+import shutil
+from unittest.mock import patch
 import tempfile
 import unittest
 
@@ -56,6 +58,36 @@ class InstallationTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 installer.install(destination, [NAMES[0]])
             self.assertTrue(target.is_symlink())
+
+    def test_local_personal_files_are_not_bundled(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "source"
+            shutil.copytree(ROOT / "skills", source / "skills")
+            for shared in installer.SHARED:
+                shutil.copyfile(ROOT / shared, source / shared)
+            skill = source / "skills" / NAMES[0]
+            (skill / "profile.json").write_text('{"synthetic_private": true}')
+            (skill / "personal-notes.md").write_text("synthetic private notes")
+            (skill / "state").mkdir()
+            (skill / "state" / "journal.jsonl").write_text("synthetic journal")
+            with patch.object(installer, "ROOT", source):
+                bundle = installer.install(Path(directory) / "output", [NAMES[0]])[0]
+            self.assertFalse((bundle / "profile.json").exists())
+            self.assertFalse((bundle / "personal-notes.md").exists())
+            self.assertFalse((bundle / "state").exists())
+
+    def test_linked_source_file_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "source"
+            skill = source / "skills" / NAMES[0]
+            skill.mkdir(parents=True)
+            private = Path(directory) / "private.md"
+            private.write_text("synthetic private content")
+            (skill / "SKILL.md").symlink_to(private)
+            with patch.object(installer, "ROOT", source):
+                with self.assertRaises(ValueError):
+                    installer.install(Path(directory) / "output", [NAMES[0]])
+            self.assertFalse((Path(directory) / "output" / NAMES[0]).exists())
 
     def test_checkout_is_not_an_install_destination(self):
         with self.assertRaises(ValueError):
