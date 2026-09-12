@@ -5,8 +5,8 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-SHARED = {"safety.md": ROOT / "SECURITY.md",
-          "personalization.md": ROOT / "docs/personalization.md"}
+SHARED = {"SECURITY.md": ROOT / "SECURITY.md",
+          "PERSONALIZATION.md": ROOT / "PERSONALIZATION.md"}
 
 
 def check(root=ROOT, sync=False):

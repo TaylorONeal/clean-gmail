@@ -1,27 +1,12 @@
-# Template only. Copy preferences into private account state, never edit here.
+# Legacy filename retained for existing installers. This v2 descriptor grants
+# no actions. Keep populated v1 files intact outside the repository and migrate
+# preferences only after review. Runtime state belongs in the shared profile.
 version: 2
-account:
-  id: null
-  email: null
-  timezone: null
-  setup_completed: false
-run:
-  mode: preview
-  search_window_days: 14
-  max_messages_read: 200
-  max_sender_proposals: 20
-protected_addresses: []
-protected_domains: []
-keep_lanes: []
-cut_preferences: []                  # Preferences only, never permission to act.
-grants: []                           # No active mailbox authority on installation.
-unsubscribe:
-  unattended: false
-  require_explicit_list_method_approval: true
-  require_trusted_authentication: true
-  require_aligned_dkim_header_coverage: true
-  on_gate_failure: hold
-  follow_redirects: false
-  automatic_paired_filter: false
-  manual_forms: user_handoff
-# v1 enabled cut_rules, lists and scheduled prompts do not migrate as grants.
+mode: preview
+profile_path: null
+journal_path: null
+# Cap applies to interactive, explicitly authorized requests only.
+max_interactive_unsubscribe_attempts: 10
+on_gate_failure: leave_for_review
+create_paired_filter: false
+unattended_unsubscribe: false

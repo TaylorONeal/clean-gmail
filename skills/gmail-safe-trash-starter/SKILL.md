@@ -1,59 +1,68 @@
 ---
 name: gmail-safe-trash-starter
-description: Preview Gmail cleanup with explicit recovery and Trash retention limits. Use when the user asks for safe deletion or cautious inbox cleanup.
+description: Review stale Gmail clutter with explicit recoverability and itemized Trash approval. Use when users ask for safe deletion or reassurance about cleanup; archive remains the default.
 ---
 
-# Gmail Safe Trash Starter
+# Gmail Safe Trash
 
-Read [the safety contract](references/safety.md) and
-[personalization protocol](references/personalization.md) before the first run.
-They define account isolation, protection, grants, private state and recovery.
+Read [Security](references/SECURITY.md) and [Personalization](references/PERSONALIZATION.md)
+before acting. If either is unavailable, stay read-only. Use the same private
+per-account profile and journal across all Gmail skills; templates are not
+personal state or authorization. Discover tools actually available in the host.
 
-## Setup and discover
+## Start with a useful preview
 
-Verify the account and capabilities; reuse its confirmed profile. Start with a
-bounded read-only census and collect any missing priorities/protections. An
-explicitly empty family-contact list is acceptable. Setup creates no filters or
-mailbox changes. Do not assume a particular browser or connector is available.
+Confirm the account and reuse its profile; otherwise follow personalization
+setup. Sample and paginate within the scan cap, showing actual coverage. Search
+expressions discover candidates only. Inspect every message and its thread
+before any action; skip if the tool cannot prove protection checks.
 
-## Select candidates
-
-Searches are discovery only. Inspect each candidate and current thread for
-protected content and participation; missing evidence means hold.
-
-| Candidate | Minimum age | Additional evidence |
+| Candidate | Minimum backlog age | Additional check |
 |---|---|---|
-| Expired one-time codes | 7 days | Code only; no security incident, reset or account notice |
-| Expired email activation | 30 days | No active setup, credentials or account dependency |
-| Promotions | 30 days | Explicitly unwanted exact sender/list; no mixed transactions |
-| Welcome/onboarding | 60 days | Inactive product and no order, billing or credential content |
+| Expired one-time login codes | 7 days | Confirm it is an expired code, not an account/security alert |
+| Email activation prompts | 30 days | Account setup is no longer active; otherwise preserve |
+| Delivery status | 60 days | No receipt, return, warranty, claim or unresolved delivery |
+| Promotions from approved senders | 30 days | Exact sender/list rule; unread alone proves nothing |
+| Welcome/onboarding | 60 days | Inspect for embedded receipts and active setup; uncertainty preserves |
+| Old calendar mail | No automatic cutoff | Received date is NOT event date; preserve recurring/future/unknown events |
 
-Shipping, travel, calendar invites and attachments stay protected by default.
-Email age does not establish whether an event happened. Read/unread status alone
-does not establish usefulness. User history and current priorities can protect
-any candidate, even when Gmail calls it Promotions.
+Age is necessary, never sufficient. There is no blanket assumption that return
+windows end at 60 days. Records, personal mail, active security notices, sent,
+drafts, starred/important messages and protected or replied threads stay put.
+Calendar mail remains review-only; do not download an ICS merely to delete mail.
 
-## Prepare and apply
+## Apply only authorized changes
 
-Show counts, coverage, exact candidate IDs/scopes, reason and proposed action.
-Prefer archive + a user-approved label. Apply only existing valid standing grants
-or the exact interactive approval. Trash requires interactive approval and the
-same protection checks; explain its retention window. Do not deploy persistent
-filters as a bulk-cleanup technique, and never retroactively apply to unseen mail.
+Default to archive + an approved label, retaining unread state. Standing mode
+applies ONLY to exact approved bulk rules under Personalization, with its minimum
+30-day age and all protections; other categories remain interactive proposals.
+If the user explicitly selects Trash, preview exact IDs/counts and consequences;
+use that itemized authorization for the batch. Never permanent-delete.
 
-A future-routing filter is a separate proposal: show its actual Gmail criteria,
-exclusions, action and collateral risk. Gmail filtering cannot enforce this
-skill's content/history checks; if those checks are necessary, use the agent's
-bounded message workflow instead. Never create broad subject/domain delete filters.
+Acquire the account writer lock, journal original labels and intended changes,
+re-fetch messages and threads, mutate explicit message IDs, then read back.
+Respect both daily and run caps. No whole-inbox selection, no sample-based bulk
+writes, and no persistent filter as a substitute for a missing message-write tool.
+If only thread operations exist, skip every mixed/protected thread. Reconcile
+unknown outcomes before another write. Offer recovery from the journal.
 
-Re-read before writes, journal pending actions, respect per-run/day caps and
-verify results. If only thread operations exist, every current message must be
-eligible. Finish with verified archived/trashed counts, held items, coverage,
-and the operation IDs needed to undo. Never imply the entire mailbox is safe
-because a sample looked safe.
+## Future mail and phishing
 
-## Suspicious mail
+Do not turn old-code, activation, welcome or calendar searches into incoming
+Trash filters: that removes fresh useful mail. Prefer the scheduled message-level
+age checks above. Any persistent filter is a separate reviewed plan with exact
+criteria, exclusions, examples and action; inspect existing filters first.
+No retroactive application unless separately included in the plan. A sender
+with mixed transactional and marketing mail is not a broad filter candidate.
 
-Observe repeated campaigns without visiting their URLs. Failed authentication,
-TLD, recipient alias, repetition and scary subjects alone are not proof of junk.
-Propose review with evidence; do not auto-block, rescue or generate delete rules.
+Phishing detection is read-only: group observed campaigns, preserve suspicious
+messages, and surface actionable evidence. Country, language, TLD, Gmail category
+or failed authentication alone never establishes malice. Do not quote an
+attacker's subject into filter criteria or alter Gmail's security settings.
+
+## Completion
+
+Report verified changes, skipped/unknown coverage and any recovery needed. Batch
+ordinary decisions and deduplicate per Personalization. Scheduled runs may execute
+only valid standing archive rules; everything else is a proposal. Stay quiet on
+unchanged scheduled runs. An interactive request gets a concise result.
