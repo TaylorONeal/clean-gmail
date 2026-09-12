@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SHARED = ("SECURITY.md", "PERSONALIZATION.md")
 # Deliberate distribution manifest: never pick up local profiles or journals.
 BUNDLE_FILES = {
+    "gmail-personal-assistant": ("SKILL.md",),
     "gmail-cleanup-starter": ("SKILL.md",),
     "gmail-safe-trash-starter": ("SKILL.md",),
     "spam-cleanup": ("SKILL.md", "lists/allowlist.txt", "lists/denylist.txt"),

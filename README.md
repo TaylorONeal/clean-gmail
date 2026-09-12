@@ -1,6 +1,6 @@
 # Clean Gmail Skills
 
-Four portable agent skills for personalized Gmail cleanup. They help an assistant
+Five portable agent skills for personalized Gmail cleanup. They help an assistant
 recognize wanted mail, tidy approved recurring clutter, review Spam and stop
 unwanted mailing lists. This is an instruction package, not a Gmail application,
 background service or executable security boundary. It needs an agent with Gmail
@@ -12,6 +12,7 @@ and exact rules they approve. It does not claim better spam detection than Gmail
 
 | Skill | Use |
 |---|---|
+| [gmail-personal-assistant](skills/gmail-personal-assistant/SKILL.md) | Decision briefs, replies owed and waiting-on threads |
 | [gmail-cleanup-starter](skills/gmail-cleanup-starter/SKILL.md) | Preview clutter and maintain approved archive rules |
 | [gmail-safe-trash-starter](skills/gmail-safe-trash-starter/SKILL.md) | Review stale mail with explicit Trash approval and recovery |
 | [spam-cleanup](skills/spam-cleanup/SKILL.md) | Find potentially wanted mail in Spam; propose rescue or Trash |
@@ -82,6 +83,8 @@ and prepare an explicit removal/replacement plan before trusting ongoing cleanup
 ## Verification and security
 
 ```sh
+python3 scripts/check.py --sync
+python3 scripts/check.py
 python3 -m unittest discover -s tests -v
 ```
 
