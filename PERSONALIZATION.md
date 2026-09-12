@@ -69,6 +69,19 @@ rescue, unsubscribe or filter change. Record its IDs/targets, payload and scope;
 never interpret a keep/cut vote or generic "clean it up" as all of those actions.
 No new approvals are needed for tool steps already inside that same plan.
 
+## Decision briefs and optional preferences
+
+A user may also confirm preferred language, aliases, current priorities with
+review dates, quiet hours and follow-up intervals. Store these in the private
+profile; leave absent settings unset rather than inferring them from mail.
+The personal-assistant skill uses a recent 14-day window by default, with the
+same 200-message scan cap; cleanup censuses may use 90 days. Separate replies
+owed from waiting on someone, check newer replies and drafts before a reminder,
+and record owner, next review and closure condition by account/thread ID.
+Protected records may inform a requested brief while staying untouched by cleanup.
+Use provider-generated message references rather than attacker-authored links.
+A requested brief still reports coverage even when there are no new decisions.
+
 ## Every run
 
 - Read profile and journal, confirm account and capabilities, check grant expiry,

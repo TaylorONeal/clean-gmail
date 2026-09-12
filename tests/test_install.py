@@ -18,7 +18,7 @@ class InstallationTests(unittest.TestCase):
     def test_all_bundles_are_independent_and_links_resolve(self):
         with tempfile.TemporaryDirectory() as directory:
             bundles = installer.install(Path(directory), NAMES)
-            self.assertEqual(len(bundles), 4)
+            self.assertEqual(len(bundles), 5)
             for bundle in bundles:
                 for shared in installer.SHARED:
                     self.assertEqual((bundle / "references" / shared).read_bytes(),
