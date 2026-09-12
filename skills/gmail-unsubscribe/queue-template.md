@@ -1,57 +1,26 @@
-# Gmail Unsubscribe — YOUR_EMAIL@gmail.com
+# Private list review queue
 
-Working log for getting off unwanted email lists. A recurring task reads
-`unsubscribe-config.yaml` for rules and this file for history and pending
-decisions, actions a capped batch of senders, and appends below. The config is
-the rules; this file is the record. Between them they are the source of truth —
-not the agent's memory.
+Create the working copy in account-isolated private state, outside this repo.
+This queue records preferences/proposals, not permission. The shared journal
+records pending and verified operations separately.
 
-- Setup completed: FILL_IN_DATE
-- Cadence: weekly
-- Per-run cap: 40 senders
-- Config: `unsubscribe-config.yaml` in this folder
+Account ID:
+Evidence window and pagination coverage:
+Profile version:
 
-## How this works
+## Decisions
 
-The unit is a SENDER, not a message. Each run builds a census of list mail
-grouped by sender, screens it against the protected list, buckets keep / cut /
-review, and for each cut sender unsubscribes via the standard List-Unsubscribe
-header (one-click or mailto) THEN creates a paired Gmail filter so the mail stops
-even if the unsubscribe is ignored. Spam and header-less junk are blocked +
-filtered, never unsubscribed (that would confirm a live address). Nothing is
-ever permanent-deleted; filters label or Trash (recoverable 30 days).
+| Account + sender/list key | Evidence/reason | Proposed method | Status | Approval reference | Last surfaced change | Next review |
+|---|---|---|---|---|---|---|
 
-## Safety
+No answer means pending. Deduplicate by stable key. Recheck protection and exact
+scope before any interactive action. Escape display fields; no raw headers,
+message bodies, tracking URLs or unsubscribe tokens here.
 
-- Never touch a protected sender or a Rule Zero category (see config).
-- Unsubscribe only via the List-Unsubscribe header; never a body link.
-- Never exceed the per-run cap.
-- Uncertain → "Needs your eyes" below, never actioned.
-- Stop for the day on any error, action block, or auth prompt, and log it.
+## Outcomes
 
----
+| Operation ID | Request status | Routing status | Verified at | Recovery status |
+|---|---|---|---|---|
 
-## Needs your eyes
-
-_(borderline senders land here; reply with the ones you're fine cutting and the
-next run actions them — anything you don't answer just stays here, never cut by
-default)_
-
-| Sender | Why flagged | Method available | Last received | Count |
-|--------|-------------|------------------|---------------|-------|
-
----
-
-## Run log
-
-| Date | Census size | Unsubscribed | Blocked/filtered | Kept | To review | Notes |
-|------|-------------|--------------|------------------|------|-----------|-------|
-
-## Action history (sender — method — filter — reason — date)
-
-_(one line per actioned sender)_
-
-## Re-subscribe / mistakes
-
-_(if you flag a wrong cut, note it here so the run learns to protect that type;
-the paired filter is removed and a protective keep note is added to the config)_
+Request accepted does not prove delivery has stopped. A correction suspends the
+rule and prepares recovery; it does not automatically resubscribe the user.
