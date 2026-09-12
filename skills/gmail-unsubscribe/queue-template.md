@@ -1,26 +1,21 @@
-# Private list review queue
+# Mailing-list review queue
 
-Create the working copy in account-isolated private state, outside this repo.
-This queue records preferences/proposals, not permission. The shared journal
-records pending and verified operations separately.
+Copy into the private account state directory, never into version control.
+Record account and profile path at setup. This queue contains evidence and
+proposals, not authority; confirmed decisions belong in the shared profile.
 
-Account ID:
-Evidence window and pagination coverage:
-Profile version:
+## Pending decisions
 
-## Decisions
+| Stable sender/list key | Evidence date | Reason | Proposed action | Status | Last surfaced | Next review | Approval reference |
+|---|---|---|---|---|---|---|---|
 
-| Account + sender/list key | Evidence/reason | Proposed method | Status | Approval reference | Last surfaced change | Next review |
+## Run coverage
+
+| Run ID | Time | Scan window / cursor | Messages examined | Accepted requests | Unknown outcomes | New decisions |
 |---|---|---|---|---|---|---|
 
-No answer means pending. Deduplicate by stable key. Recheck protection and exact
-scope before any interactive action. Escape display fields; no raw headers,
-message bodies, tracking URLs or unsubscribe tokens here.
+## Corrections and recovery
 
-## Outcomes
-
-| Operation ID | Request status | Routing status | Verified at | Recovery status |
-|---|---|---|---|---|
-
-Request accepted does not prove delivery has stopped. A correction suspends the
-rule and prepares recovery; it does not automatically resubscribe the user.
+Record exact user correction, affected rule/plan, proposed recovery and verified
+outcome. Keep write intents and label deltas in the shared journal under S7.
+Do not copy bodies, subjects, raw headers or token-bearing unsubscribe URLs.

@@ -19,6 +19,7 @@ class PackagingTests(unittest.TestCase):
         shutil.copytree(ROOT / "skills", self.root / "skills")
         shutil.copytree(ROOT / "docs", self.root / "docs")
         shutil.copy2(ROOT / "SECURITY.md", self.root / "SECURITY.md")
+        shutil.copy2(ROOT / "PERSONALIZATION.md", self.root / "PERSONALIZATION.md")
         self.skill = self.root / "skills/gmail-personal-assistant"
 
     def test_repository_is_portable(self):
@@ -34,7 +35,7 @@ class PackagingTests(unittest.TestCase):
         self.assertTrue(checker.check(self.root))
 
     def test_missing_safety_blocks_validation(self):
-        (self.skill / "references/safety.md").unlink()
+        (self.skill / "references/SECURITY.md").unlink()
         self.assertTrue(checker.check(self.root))
 
     def test_drift_is_detected_and_sync_preserves_entrypoint(self):

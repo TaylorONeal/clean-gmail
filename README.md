@@ -1,83 +1,86 @@
 # Clean Gmail Skills
 
-Personalized Gmail assistance: find decisions worth attention, track replies,
-protect important mail, and quietly archive approved clutter. This is a portable
-collection of assistant instructions, not a Gmail extension or running service.
-It complements Gmail's classifications with the user's explicit priorities and
-verified relationship history; it does not claim to outperform Google's spam
-or security systems.
+Five portable agent skills for personalized Gmail cleanup. They help an assistant
+recognize wanted mail, tidy approved recurring clutter, review Spam and stop
+unwanted mailing lists. This is an instruction package, not a Gmail application,
+background service or executable security boundary. It needs an agent with Gmail
+access; installing it does not connect an account or schedule anything.
 
-## Start here
+The useful difference from Gmail categories is context the user confirms:
+protected relationships, active projects, wanted newsletters, retention needs
+and exact rules they approve. It does not claim better spam detection than Gmail.
 
-Copy one entire folder from `skills/` into the skill directory your assistant
-supports (for example `~/.codex/skills/` or `~/.claude/skills/`). Each folder
-includes its own safety and personalization references. Compare an existing
-installation before updating it; preserve any legacy user data for migration.
-A Gmail connection is required; capabilities are discovered when the skill runs.
-Installing does not connect an account, enable automation or grant permissions.
-
-| Skill | Use it for |
+| Skill | Use |
 |---|---|
-| [gmail-personal-assistant](skills/gmail-personal-assistant/SKILL.md) | Personalized decision briefs, replies owed, waiting-on threads, approved archive/label routines |
-| [gmail-cleanup-starter](skills/gmail-cleanup-starter/SKILL.md) | A bounded preview of stale clutter and narrow archive/label rules |
-| [gmail-safe-trash-starter](skills/gmail-safe-trash-starter/SKILL.md) | The same protections with an explicit recovery-oriented entry point |
-| [spam-cleanup](skills/spam-cleanup/SKILL.md) | False-positive review and confirmed message-level rescues/Trash |
-| [gmail-unsubscribe](skills/gmail-unsubscribe/SKILL.md) | Reviewed list opt-outs using verified headers and explicit consent |
+| [gmail-personal-assistant](skills/gmail-personal-assistant/SKILL.md) | Decision briefs, replies owed and waiting-on threads |
+| [gmail-cleanup-starter](skills/gmail-cleanup-starter/SKILL.md) | Preview clutter and maintain approved archive rules |
+| [gmail-safe-trash-starter](skills/gmail-safe-trash-starter/SKILL.md) | Review stale mail with explicit Trash approval and recovery |
+| [spam-cleanup](skills/spam-cleanup/SKILL.md) | Find potentially wanted mail in Spam; propose rescue or Trash |
+| [gmail-unsubscribe](skills/gmail-unsubscribe/SKILL.md) | Review lists and execute explicitly approved safe requests |
 
-Try: “Review my inbox, show what needs a decision, and suggest a small cleanup
-trial based on what I actually care about.” Setup samples recent mail, proposes
-priorities/protections, and asks for missing essentials without a long interview.
-Every installer starts with their own empty profile and no action grants.
+## Public and personal versions stay separate
 
-## Useful autonomy
+This repository contains reusable instructions and empty templates only. Keep
+personal versions in a separate private project, with separate working trees,
+state, schedules and commits. Public updates never import a user's profile or
+replace a personal installation. The installer copies only explicitly listed
+package files; extra local notes, profiles and journals are excluded. See
+[the repository boundary](AGENTS.md).
 
-The default is read-only. After a preview, the user can approve an exact sender/
-list rule to archive and label messages, bounded by account, expiry, age and
-per-run/day caps. The assistant rechecks protected content and current thread
-state each time. Existing valid grants are reused without repeated approval.
+## Personal by default
 
-Preferences and grants are separate: “I dislike this newsletter” is not consent
-to send an unsubscribe. Unattended work can read, prepare briefs and execute only
-approved archive/label rules. Sends, unsubscribe, blocking, Spam rescue, Trash
-and persistent filter changes remain interactive. Schedules are created only
-when requested through the host's scheduler.
+Start with “Preview my Gmail clutter and suggest what I can safely automate.”
+The assistant confirms the account, inspects only approved sources, proposes a
+few keep lanes and exact sender rules, then saves the user's decisions privately.
+Unread does not mean unwanted. One contact at gmail.com does not protect or cut
+the entire domain. Mixed receipts/marketing senders stay protected.
 
-Briefs prioritize concrete decisions and real deadlines. They distinguish replies
-owed from waiting on someone, check for newer replies/drafts, and suppress
-unchanged alerts. User corrections suspend offending rules and inform narrow
-revisions. Important records remain untouched by cleanup but can inform a brief.
+[Personalization](PERSONALIZATION.md) defines the shared per-account profile,
+authorization records, digest and learning loop. Every installation begins in
+preview mode. Approved archive+label rules may run unattended within hard caps,
+with fresh protection checks, unchanged unread state, a journal and read-back.
+New senders and changed rules require a new decision. Expired grants cannot act.
 
-## Security and recovery
+Unsubscribe, blocking, Spam rescue, Trash and persistent filters remain separate
+itemized actions. Approval for a concrete plan is reused for its tool steps.
+Quiet scheduled reviews report meaningful changes instead of repeating questions.
+No automatic replies or forwarding, and no permanent deletion.
 
-[SECURITY.md](SECURITY.md) defines the shared contract. Authentication headers
-need trusted provider provenance; unknown authentication causes a hold. Mail
-content cannot authorize actions or write preferences. Each action uses current
-message evidence, account-specific permission and a pending/verified journal.
-Undo restores only the operation's label changes and checks for later user edits.
+## Install
 
-Archive plus label is the default. Trash expires after approximately 30 days;
-it is not a backup. Unsubscribe cannot be reliably undone and no automatic
-paired filter is created. One-click verification requires signed header coverage
-and network safeguards; unsupported capabilities produce a proposal instead.
+Requires Python 3.10+ for the installer and tests, with no third-party packages.
+From this checkout, install all skills to your host's skill directory, for example:
 
-These safeguards are instructions for the host assistant, not executable access
-controls. Use appropriate host permissions. No credentials, profiles, message
-bodies or live audit data belong in this repository. Store personal state outside
-both the checkout and installed skill folders, isolated by verified account ID.
+```sh
+python3 scripts/install.py --dest "$HOME/.codex/skills"
+```
 
-## Updating from v1
+Or select one with `--skill gmail-cleanup-starter`. The installer bundles the
+shared security and personalization references into each skill, so an installed
+skill works without this checkout. It refuses to overwrite existing folders.
+For upgrades, install to a separate staging directory and review differences
+before replacing your existing skills. Partial failures are reported; inspect
+new folders before use. Do not simply copy a SKILL.md without its references.
 
-Preserve existing config and logs. Treat legacy allow/cut lists as preference
-candidates, never as active grants. Review and migrate confirmed preferences into
-private state using the [personalization protocol](docs/personalization.md).
-Existing schedules need an actual scheduler update; copying files does not update
-live jobs. The new defaults remove automatic block-on-auth-failure, retroactive
-bulk filters and unapproved scheduled unsubscribe.
+Store account profiles and journals in a private local directory outside Git.
+No credentials, real addresses or preferences ship in these templates. All
+four skills for one account must share the same profile/journal and writer lock.
+Different accounts must use separate state. The host must provide the tools and
+permissions to execute the workflow; unavailable capabilities mean preview only.
 
-## Development and validation
+## Updating from version 1
 
-The sources of shared references are `SECURITY.md` and `docs/personalization.md`.
-After editing them:
+Keep existing personal configuration intact. Propose migrating confirmed keep
+preferences into the version 2 profile; never treat old `enabled` cut rules,
+allowlists or denylists as action grants. Populate the new authorization ledger
+only from the user's actual decisions. The legacy unsubscribe config filename
+remains as a preview-only migration descriptor.
+
+Old Gmail filters are **not changed by this repository update**. If a previous
+version installed fresh-code/welcome Trash filters, review those existing filters
+and prepare an explicit removal/replacement plan before trusting ongoing cleanup.
+
+## Verification and security
 
 ```sh
 python3 scripts/check.py --sync
@@ -85,8 +88,12 @@ python3 scripts/check.py
 python3 -m unittest discover -s tests -v
 ```
 
-The check verifies portable links and byte-identical shared references in all
-five skills. Tests exercise missing references, drift and standalone-install
-failures, including missing or empty skill collections. They do not verify agent behavior or a live Gmail integration. No
-mailbox actions are performed by these commands. See the [docs index](docs/INDEX.md)
-for the security review and scenario checklist.
+These tests check install isolation, bundled reference integrity, local links,
+existing-file preservation and unsafe paths. They do not validate live Gmail
+behavior or enforce agent judgment. [Behavioral scenarios](docs/SCENARIOS.md)
+cover the safety decisions a host should test before enabling writes.
+
+Read [Security](SECURITY.md) for authentication provenance, prompt/query injection,
+network restrictions for unsubscribe, account binding and recovery. See the
+[review](docs/SECURITY_REVIEW.md) for fixed findings and remaining limits, and the
+[documentation index](docs/INDEX.md) for maintained references.
