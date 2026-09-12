@@ -5,7 +5,7 @@ description: Review stale Gmail clutter with explicit recoverability and itemize
 
 # Gmail Safe Trash
 
-Read [Security](../../SECURITY.md) and [Personalization](../../PERSONALIZATION.md)
+Read [Security](references/SECURITY.md) and [Personalization](references/PERSONALIZATION.md)
 before acting. If either is unavailable, stay read-only. Use the same private
 per-account profile and journal across all Gmail skills; templates are not
 personal state or authorization. Discover tools actually available in the host.

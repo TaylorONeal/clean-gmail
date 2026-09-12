@@ -14,3 +14,6 @@ state/
 unsubscribe-config.yaml
 !skills/gmail-unsubscribe/unsubscribe-config.yaml
 scheduled-prompt.txt
+
+.DS_Store
+private/
