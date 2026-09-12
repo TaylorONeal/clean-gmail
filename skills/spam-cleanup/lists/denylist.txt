@@ -1,15 +1,7 @@
-# Spam-cleanup denylist — senders/domains to ALWAYS trash from Spam.
-# One entry per line.
-# An entry is a full address (name@example.com) or a bare
-# domain (example.com). A domain matches that exact domain and its subdomains,
-# on DNS label boundaries only: `example.com` matches `mail.example.com` and
-# does NOT match `notexample.com`, `example.community`, or
-# `example.com.evil.ru`. Never substring-match here — lookalike domains are
-# cheap to register and substring matching is how they get treated as trusted.
-# Lines starting with '#' are comments.
-#
-# The skill appends here only on your explicit, per-entry confirmation, never
-# from a content-only judgment, and NEVER for a domain you have corresponded
-# with two ways — an attacker who gets a real sender denylisted has cut a
-# relationship silently, which costs you more than the spam did. If a sender
-# matches both lists, the allowlist wins and the collision is reported.
+# Legacy preference template: denylist
+# Keep this distributed template empty. Store confirmed entries in private
+# account-specific state outside the repository and installed skill folder.
+# An entry is a validated exact address or a domain matched at DNS boundaries.
+# Entries do not authorize rescue, Trash, blocking, unsubscribe or filters.
+# Protection wins collisions. Never widen a person to a shared-provider domain.
+# Existing user lists must be reviewed as preferences, never migrated as grants.
