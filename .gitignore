@@ -1,16 +1,19 @@
-.DS_Store
 __pycache__/
 *.pyc
+.venv/
 .env
 .env.*
 !.env.example
-state/
-private/
+# Personal state must live outside the checkout; these guard common mistakes.
 profile.json
 journal.jsonl
 queue.md
 audit.log
-# Private copies of the distributed configuration template.
+state/
+# Preserve legacy private-config exclusions.
 unsubscribe-config.yaml
 !skills/gmail-unsubscribe/unsubscribe-config.yaml
 scheduled-prompt.txt
+
+.DS_Store
+private/

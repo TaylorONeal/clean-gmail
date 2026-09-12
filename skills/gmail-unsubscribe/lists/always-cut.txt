@@ -1,7 +1,4 @@
-# Legacy preference template: always-cut
-# Keep this distributed template empty. Store confirmed entries in private
-# account-specific state outside the repository and installed skill folder.
-# An entry is a validated exact address or a domain matched at DNS boundaries.
-# Entries do not authorize rescue, Trash, blocking, unsubscribe or filters.
-# Protection wins collisions. Never widen a person to a shared-provider domain.
-# Existing user lists must be reviewed as preferences, never migrated as grants.
+# Legacy preference template. Suggested unwanted lists; never unsubscribe, block or filter authority.
+# Store personal entries outside the checkout. Migrate explicitly confirmed
+# entries to the shared per-account profile; prefer exact addresses.
+# Domain comparisons require DNS label boundaries. Protection wins conflicts.

@@ -5,8 +5,8 @@ description: Build a personalized Gmail decision brief, track replies and follow
 
 # Personal Gmail Assistant
 
-Read [the safety contract](references/safety.md) and
-[personalization protocol](references/personalization.md). Help this account's
+Read [the safety contract](references/SECURITY.md) and
+[personalization protocol](references/PERSONALIZATION.md). Help this account's
 owner make useful decisions; do not optimize for an empty inbox.
 
 1. Verify account/capabilities and load its profile and journal. If new, inspect

@@ -1,82 +1,67 @@
 ---
 name: gmail-unsubscribe
-description: Review unwanted Gmail lists and unsubscribe from explicitly approved senders using verified header methods. Use for stopping newsletters or marketing mail; protect transactional and personal relationships.
+description: Build a personalized census of Gmail mailing lists and prepare or execute explicitly approved unsubscribe requests. Use to stop unwanted newsletters and marketing while protecting transactional and personal senders.
 ---
 
-# Gmail Unsubscribe
+# Gmail unsubscribe
 
-Read [the safety contract](references/safety.md) and
-[personalization protocol](references/personalization.md). Setup and unattended
-runs propose only. Unsubscribe sends information externally and cannot reliably
-be undone. It requires explicit approval covering the exact list and method.
+Read [Security](references/SECURITY.md) and [Personalization](references/PERSONALIZATION.md)
+before acting. If either is unavailable, stay read-only. Use the same private
+per-account profile and journal across all Gmail skills; templates are not
+personal state or authorization. Discover tools actually available in the host.
 
-## Census and protection
+## Census before action
 
-Verify account/capabilities and load private state. Sample a bounded window of
-list mail, grouping by exact address and List-Id for analysis only. Never paste
-List-Id into queries. Check transactional content, protected relationships and
-sent history before suggesting a cut. Mixed marketing/transactional senders,
-shared platforms, real correspondents and unknown evidence stay protected/held.
-Unread state and a List-Unsubscribe header do not mean unwanted mail.
+Setup is preview-only. Group by exact sender address plus literal parsed List-Id,
+not the entire domain. Scan at most the profile cap over 90 days by default;
+report incomplete coverage. Validate sender identity and compare List-Id as data,
+never insert it into a query. Infer possible keep lanes from the sample and get
+user corrections. Unread status does not mean unwanted; no fabricated click data.
 
-Show keep / cut proposal / review with count, evidence, method availability and
-scope. Reuse explicit itemized approval if still applicable. Do not force an
-extra confirmation for an action already authorized by the user's request.
+Preserve personal correspondents, keep lanes and senders of receipts, billing,
+security/account, medical/legal, calendar or travel mail. Inspect mixed streams
+before deciding. Never unsubscribe, block or filter a whole retailer, bank,
+shared email provider or domain just because one stream is promotional.
 
-## Verified methods
+Each candidate is **keep**, **review**, or **propose unsubscribe**. Show exact
+sender/list, evidence, method and expected consequence. Cut preferences are not
+send permission. Obtain or reuse explicit approval for the particular request.
+Unattended runs build proposals only; they never unsubscribe or block.
 
-Mail headers are not inherently trustworthy. Establish authentication through
-the receiving provider's trusted results, not a header that merely claims a
-pass. Missing provenance means review. Failed gates never trigger automatic
-blocking, filtering or Trash.
+## Execute one approved request
 
-For one-click require a valid, From-aligned DKIM signature covering BOTH
-List-Unsubscribe and List-Unsubscribe-Post, with coverage established for that
-validated signature, and exactly `List-Unsubscribe=One-Click`. DMARC pass alone
-is insufficient. Reject ambiguous/duplicate headers. These requirements follow
-[RFC 8058](https://www.rfc-editor.org/rfc/rfc8058.html).
+Follow Security S6 in full. Direct one-click needs a verified aligned DKIM
+signature covering both unsubscribe headers, a vetted HTTPS target and a client
+that enforces public-IP connection checks and no redirects/credentials. Do not
+infer signature coverage from DMARC alone. Unsupported checks mean review.
 
-Validate the HTTPS endpoint against the authenticated sender or a separately
-verified, user-approved list provider; do not learn a provider mapping from the
-message. Require normal TLS verification, no userinfo, no fragments, no unusual
-ports, and only public network destinations. Reject localhost, private,
-loopback, link-local, reserved and metadata-service addresses including IPv6.
-The client must enforce this on DNS resolution and the actual connected peer
-(to prevent DNS rebinding); if unavailable, do not fetch. No redirects, cookies,
-credentials, ambient auth, preliminary GET or response-driven follow-up actions.
+Mailto needs separate exact-message send authorization and validated recipient
+and parameters. Never send to unknown/Spam senders. Web forms remain manual.
+Missing headers, unrecognized senders, authentication failure or an unsafe URL
+all mean **leave/review**, never an automatic block or Trash-filter fallback.
 
-Send the approved POST with `Content-Type: application/x-www-form-urlencoded`
-and body `List-Unsubscribe=One-Click`. Bound timeout and response size; ignore
-response content. A 2xx verifies acceptance of the request, not future delivery
-suppression. An uncertain response stays pending; never blindly repeat it.
+Journal the request intent without secret URLs/tokens. After uncertain network
+outcomes do not retry blindly. Record accepted, failed or unknown, not a claim
+that delivery has stopped. Cap interactive runs at 10 attempted senders, or the
+user's lower cap. Stop writes on the first error and explain partial outcomes.
 
-A mailto method needs separate explicit send authorization for one validated
-recipient and reviewed subject. Reject cc/bcc, extra recipients, body fields,
-CR/LF (including encoded controls), and ambiguous URI parameters. Never forward
-mail or include user context. Unfamiliar senders are not safer via mailto: it
-still confirms an active address. Prepare a proposal if sending is unavailable.
+## Suppression is a separate decision
 
-Manual forms are a user handoff by default. Do not open arbitrary unsubscribe
-sites or body links, fill credentials, or fall back from a failed POST to GET.
-Spam, missing headers, unknown senders and failed validation stay in place.
-Blocking or filtering is a separate, explicitly approved decision.
+Do not require a filter with every unsubscribe. Offer an independently reviewed
+archive+label filter only when the user wants it and its exact scope is safe.
+Show existing overlapping filters, criteria, exclusions, action and whether old
+messages are included. No automatic Trash fallback or retroactive bulk checkbox.
+Future arrivals can instead be handled by the shared approved message-level
+archive rules, which recheck relationships and records on every run.
 
-## Routing and verification
+## Follow-through
 
-Do not force a paired filter. It can hide receipts or future wanted mail even
-when an unsubscribe is correct. Offer approved archive/label handling for
-individually inspected messages instead. A persistent filter requires its own
-concrete criteria/action approval; if Gmail cannot express the safe list scope,
-do not create it. No broad domain or subject delete rules; no retroactive bulk
-application. Check for existing equivalent filters before proposing another.
+On a later authorized read, compare new mail IDs/dates with the request date.
+Continuing mail earns a suppression proposal; it does not automatically resend
+unsubscribe, broaden rules or create filters. Deduplicate by account/sender/list.
+User regret pauses the corresponding plan, records the exact correction and
+prepares filter/message recovery. Never silently resubscribe.
 
-Journal each step separately before attempting it. Record request-accepted,
-failed or uncertain independently of routing status. Revisit later delivery
-only within the user's requested workflow; do not claim silence proves success.
-If corrected, suspend the rule and prepare label/filter recovery, preserving
-newer user edits. Resubscription requires a separate user decision.
-
-`unsubscribe-config.yaml` is a v2 setup template, not live authorization.
-Use the shared private profile/journal; migrate old config as described in the
-personalization protocol. See [scheduled-task.md](scheduled-task.md) when asked
-to schedule and [queue-template.md](queue-template.md) for review fields.
+See [scheduling](scheduled-task.md), [queue template](queue-template.md) and
+[legacy config migration](unsubscribe-config.yaml). Use the shared profile as
+the only new source of preferences and authority; do not maintain two rule stores.
