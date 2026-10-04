@@ -13,6 +13,14 @@ BUNDLE_FILES = {
     "gmail-cleanup-starter": ("SKILL.md",),
     "gmail-safe-trash-starter": ("SKILL.md",),
     "spam-cleanup": ("SKILL.md", "lists/allowlist.txt", "lists/denylist.txt"),
+    "subscription-tracker": (
+        "SKILL.md", "README.md",
+        "references/data-model.md", "references/vendor-patterns.md",
+        "references/scheduled-task.md", "references/lessons-learned.md",
+        "scripts/build_tracker.py", "scripts/review.py",
+        "examples/sample-rows.json", "examples/sample-previous.json",
+        "examples/sample-review.md",
+    ),
     "gmail-unsubscribe": (
         "SKILL.md", "README.md", "unsubscribe-config.yaml", "scheduled-task.md",
         "queue-template.md", "lists/always-cut.txt", "lists/never-touch.txt",
@@ -76,7 +84,7 @@ def main() -> None:
     parser.add_argument("--dest", required=True, type=Path,
                         help="Host's skill directory; existing skills are never replaced")
     parser.add_argument("--skill", action="append", dest="names",
-                        help="Skill to install (repeatable); default: all four")
+                        help="Skill to install (repeatable); default: all")
     args = parser.parse_args()
     names = args.names or sorted(BUNDLE_FILES)
     try:
