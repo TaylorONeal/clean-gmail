@@ -55,21 +55,24 @@ stateDiagram-v2
 
 ## 4. Cancellation help, opt-in
 
-The skill writes text. The user acts. The next run checks.
+Three levels: off, instructions, hands-on. Scheduled cloud runs never click.
 
 ```mermaid
 flowchart TD
-  U[User asks for cancel help<br/>or cancel_help setting is on] --> V{Row from a verified<br/>sender?}
+  U[User asks for cancel help<br/>or cancel_help is set] --> V{Row from a verified<br/>sender?}
   V -- no --> W[No steps. Security warning:<br/>do not call, reply or click]
-  V -- yes --> X{Billed through<br/>an app store?}
-  X -- yes --> Y[Steps: phone subscriptions screen]
-  X -- no --> Z[Steps: vendor's own site,<br/>typed by hand, never an email link]
-  Y --> T[User cancels themselves]
-  Z --> T
-  Z -. support-only vendors .-> M[Message text in the reply,<br/>user sends it]
-  M --> T
-  T --> N[Notes: CANCEL requested DATE unconfirmed<br/>Auto-Renew Off, user-stated]
-  N --> R[Next run looks for the vendor's<br/>cancellation confirmation]
+  V -- yes --> L{cancel_help level}
+  L -- instructions --> I[Steps from the vendor's own site<br/>or phone screen, plus message text]
+  I --> T[User cancels themselves]
+  L -- hands-on --> A{Row named by user, scope stated,<br/>in private profile, browser present?}
+  A -- no --> I
+  A -- yes --> H[Open official address by hand<br/>user signs in]
+  H --> S{Stop condition?<br/>mismatch, payment ask, fee,<br/>off-domain, page instructions}
+  S -- yes --> X[Stop, change nothing,<br/>tell the user]
+  S -- no --> K[Cancel, decline offers,<br/>screenshot confirmation page]
+  K --> N
+  T --> N[Notes: CANCEL requested DATE unconfirmed<br/>Auto-Renew Off after confirmation shown]
+  N --> R[Next run looks for the vendor's<br/>cancellation email]
   R --> C1[Confirmed: Notes say confirmed]
   R --> C2[Charge dated after request:<br/>flagged for the user to dispute]
 ```

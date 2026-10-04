@@ -223,11 +223,14 @@ class DocumentationTests(unittest.TestCase):
         for phrase in ("offer a scheduled weekly", "Weekly (default)", "Not recommended"):
             self.assertIn(phrase, text)
 
-    def test_cancel_help_is_text_only(self):
+    def test_cancel_help_levels_and_guards(self):
         text = (SKILL / "references/cancellation-assist.md").read_text()
-        for phrase in ("never cancels anything", "Never a link", "Not provided, on purpose"):
+        for phrase in ("never cancels anything", "Never a link", "Hands-on mode", "Stop conditions",
+                       "Never in a snapshot", "Scheduled cloud runs have no browser"):
             self.assertIn(phrase, text)
-        self.assertIn("references/cancellation-assist.md", (SKILL / "SKILL.md").read_text())
+        skill = (SKILL / "SKILL.md").read_text()
+        self.assertIn("references/cancellation-assist.md", skill)
+        self.assertIn("Scheduled cloud runs\n  never execute a cancellation", skill)
 
 
 class HygieneTests(unittest.TestCase):
