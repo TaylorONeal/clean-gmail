@@ -1,6 +1,6 @@
 # Clean Gmail Skills
 
-Five portable agent skills for personalized Gmail cleanup. They help an assistant
+Six portable agent skills for personalized Gmail cleanup and review. They help an assistant
 recognize wanted mail, tidy approved recurring clutter, review Spam and stop
 unwanted mailing lists. This is an instruction package, not a Gmail application,
 background service or executable security boundary. It needs an agent with Gmail
@@ -17,6 +17,25 @@ and exact rules they approve. It does not claim better spam detection than Gmail
 | [gmail-safe-trash-starter](skills/gmail-safe-trash-starter/SKILL.md) | Review stale mail with explicit Trash approval and recovery |
 | [spam-cleanup](skills/spam-cleanup/SKILL.md) | Find potentially wanted mail in Spam; propose rescue or Trash |
 | [gmail-unsubscribe](skills/gmail-unsubscribe/SKILL.md) | Review lists and execute explicitly approved safe requests |
+| [subscription-tracker](skills/subscription-tracker/SKILL.md) | Find recurring charges in receipts, keep dated snapshots, review what charges soon |
+
+## Subscription tracker
+
+[subscription-tracker](skills/subscription-tracker/README.md) is read-only on mail
+and never cancels or buys anything. It keeps a dated snapshot of recurring
+charges in the user's own private storage and produces a weekly review that leads
+with what will charge in the next 14 days. It separates "will it charge again"
+from "do I still have access", computes dates and totals in a script, and treats
+receipts as evidence that can be forged. The
+[lessons learned](skills/subscription-tracker/references/lessons-learned.md) from
+about twelve weeks of unattended weekly runs are the most useful part before you
+schedule anything. You can try the review on synthetic data with no mailbox:
+
+```sh
+python3 skills/subscription-tracker/scripts/review.py \
+  skills/subscription-tracker/examples/sample-rows.json --today 2026-10-05 \
+  --previous skills/subscription-tracker/examples/sample-previous.json
+```
 
 ## Public and personal versions stay separate
 

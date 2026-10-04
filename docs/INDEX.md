@@ -15,3 +15,9 @@
 - [Public package boundary](../AGENTS.md): separation from personal versions and publication checks.
 - [Personal assistant](../skills/gmail-personal-assistant/SKILL.md): decision briefs and follow-up tracking.
 - [Reference checker](../scripts/check.py): synchronize and verify standalone bundles.
+- [Subscription tracker](../skills/subscription-tracker/SKILL.md): read-only recurring-charge review.
+- [Subscription data model](../skills/subscription-tracker/references/data-model.md): columns, states, dates, money.
+- [Subscription search patterns](../skills/subscription-tracker/references/vendor-patterns.md): queries, aggregators, fake renewals.
+- [Subscription scheduling](../skills/subscription-tracker/references/scheduled-task.md): weekly task template and checklist.
+- [Subscription lessons learned](../skills/subscription-tracker/references/lessons-learned.md): evidence from weekly unattended runs.
+- [Subscription scripts tests](../tests/test_subscription_tracker.py): review math, golden output, formula neutralization, privacy checks.
