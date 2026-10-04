@@ -96,6 +96,9 @@ Keep Notes short and rewritten each run. Recognized fragments:
 - `unverified sender`: claimed charge, no verified evidence.
 - `user-stated YYYY-MM-DD`: the user supplied this state.
 - `OFFER: text`: a retention or downgrade offer. Separate several with `;`.
+- `CANCEL: requested YYYY-MM-DD unconfirmed`: the user says they canceled. Becomes
+  `confirmed` when a vendor or app store cancellation confirmation is seen. A
+  charge dated after the request is flagged by the review script.
 - `not refreshed`: this run could not check the row.
 
 ## Tricky cases
