@@ -1,6 +1,7 @@
 # Weekly scheduled review
 
-Schedule only when the user asks, through the host's real, durable scheduler. An
+Offer the schedule after the first interactive run (weekly is the default, see
+SKILL.md) and create it only on a yes, through the host's real, durable scheduler. An
 in-session timer that dies when the session ends is not a schedule. Reuse an
 existing matching task instead of creating a duplicate. Do not invent scheduler
 fields, cron features or connectors the host does not have. This prompt grants no
@@ -68,7 +69,7 @@ charge, or user-stated). A missing receipt is not a cancellation. User-stated
 states stand until a later charge receipt contradicts them. A claimed charge from
 a sender you cannot tie to a vendor or an app store is Status Verify with the note
 "unverified sender", excluded from totals. Never invent a price: write VERIFY.
-Mark inferred dates "estimated". Rewrite Notes from current evidence. If search or
+Mark inferred dates "estimated". Rewrite Notes from current evidence, but keep any "CANCEL: requested DATE" note and change unconfirmed to confirmed only when a cancellation confirmation from a verified sender is found. If search or
 storage fails, say so, carry the baseline forward unchanged and mark affected rows
 "not refreshed". Never drop a row because a search missed it.
 

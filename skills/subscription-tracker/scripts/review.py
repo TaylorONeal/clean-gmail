@@ -39,6 +39,16 @@ AMOUNT_RE = re.compile(
     r"^(?P<pre>[A-Za-z]{3}|[$€£¥₹])?\s*(?P<num>\d[\d,]*(?:\.\d+)?)\s*(?P<post>[A-Za-z]{3})?$"
 )
 OFFER_RE = re.compile(r"OFFER:\s*([^;]+)", re.IGNORECASE)
+CANCEL_RE = re.compile(r"CANCEL:\s*requested\s+(\d{4}-\d{2}-\d{2})(?:\s+(unconfirmed|confirmed))?",
+                       re.IGNORECASE)
+
+
+def cancel_request(row):
+    """Return (requested_date, confirmed) from a CANCEL note, or (None, False)."""
+    match = CANCEL_RE.search(row["notes"])
+    if not match:
+        return None, False
+    return parse_date(match.group(1)), (match.group(2) or "").lower() == "confirmed"
 
 
 # ---------------------------------------------------------------- loading
@@ -274,6 +284,20 @@ def build_review(rows, today, window, previous=None, baseline_date=None, stale_d
             if r["status"] != "Ended":
                 other.append(f"- Dropped without evidence it ended: {r['vendor']} {r['plan']}. "
                              "Restore the row unless a cancellation record exists.".replace("  ", " "))
+    for row in sorted(active, key=lambda r: r["vendor"].lower()):
+        requested, confirmed = cancel_request(row)
+        if requested is None:
+            continue
+        name = f"{row['vendor']} {row['plan']}".rstrip()
+        charged = parse_date(row["last_charge"])
+        if charged and charged > requested:
+            other.append(f"- CHARGED AFTER CANCEL REQUEST: {name} (requested {requested.isoformat()}, "
+                         f"last charge {charged.isoformat()}). Contact the vendor or your card issuer.")
+        elif row["auto_renew"] == "On":
+            other.append(f"- Cancel requested {requested.isoformat()} but {name} is still marked "
+                         "auto-renewing. Confirm it took effect in account settings.")
+        elif not confirmed:
+            other.append(f"- Cancel requested {requested.isoformat()}, no confirmation seen yet: {name}.")
     unverified = [r for r in active if "Verify" in (r["auto_renew"], r["status"])
                   or r["amount"].upper() == "VERIFY" or not r["amount"]]
     for row in sorted(unverified, key=lambda r: r["vendor"].lower()):
