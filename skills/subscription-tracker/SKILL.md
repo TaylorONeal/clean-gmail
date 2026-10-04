@@ -22,7 +22,8 @@ before setting up a schedule; most of the failure modes live there.
   details, submit a form, open a link from an email, call a number from an email
   or log in to a vendor. Cancellation is the user's step. Name where to do it:
   the vendor's own account page or the phone's subscription screen, never a link
-  inside the message.
+  inside the message. Opt-in help is text only, see
+  [cancellation help](references/cancellation-assist.md).
 - **Storage is create-only.** Write new files into one dedicated, private folder.
   Never edit, overwrite, move, delete or share an existing file, and never change
   sharing on anything.
@@ -147,10 +148,37 @@ list teaches the user to ignore the list.
   charge evidence means Status Verify.
 - Report what you could not determine, once, plainly.
 
+## Cancellation help (opt-in)
+
+This skill never cancels. If the user asks for help, or has set
+`cancel_help: instructions` in their private profile, give instructions and
+message text only, from the vendor's own site or the phone's subscription screen,
+never from an email. The user acts, then the next run checks for a confirmation
+and flags any charge dated after the request. Rules, template and failure modes
+are in [cancellation help](references/cancellation-assist.md).
+
 ## Scheduling
 
-Only when the user asks, through the host's real scheduler. Reuse an existing
-task instead of creating a duplicate. Use the prompt and checklist in
+A tracker that only runs when someone remembers is a tracker that misses the
+renewal. After the first interactive run and report, **offer a scheduled weekly
+review in one line**, with the recommended cadence, and create it only on a yes:
+
+> "Want this to run itself every Monday morning? Weekly keeps the 14-day window
+> safe even if one run is missed. I would notify you only when a charge lands
+> within 7 days."
+
+Cadence guidance:
+
+| Cadence | Use when |
+|---|---|
+| **Weekly (default)** | Almost everyone. One missed run still leaves the 14-day window covered. |
+| Daily | Many short trials or monthly charges and a user who wants early warning. More runs, more snapshots, more cost. |
+| Every two weeks or less often | Not recommended. One missed run leaves a gap in the 14-day window. |
+
+Create it through the host's real scheduler. Reuse an existing task instead of
+creating a duplicate. Use the prompt and checklist in
 [scheduled task](references/scheduled-task.md). A scheduled run is a fresh session
 with no memory, so the prompt must carry the whole spec, and it grants no new
-permissions. Attach only mail (read) and storage connectors to it.
+permissions. Attach only mail (read) and storage connectors to it. If the user
+declines, do not ask again in the same session. Diagrams of the run, the snapshot
+chain, the row states and the cancel flow are in [diagrams](references/diagrams.md).

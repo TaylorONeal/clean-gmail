@@ -17,6 +17,7 @@ BUNDLE_FILES = {
         "SKILL.md", "README.md",
         "references/data-model.md", "references/vendor-patterns.md",
         "references/scheduled-task.md", "references/lessons-learned.md",
+        "references/cancellation-assist.md", "references/diagrams.md",
         "scripts/build_tracker.py", "scripts/review.py",
         "examples/sample-rows.json", "examples/sample-previous.json",
         "examples/sample-review.md",

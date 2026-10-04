@@ -183,6 +183,53 @@ class SafetyTests(unittest.TestCase):
                 self.assertEqual(review.main([str(bad), "--today", "2026-10-05", "--strict"]), 3)
 
 
+class CancelFollowUpTests(unittest.TestCase):
+    def test_charge_after_request_is_flagged(self):
+        rows = [row(auto_renew="Off", next_event="2026-10-20", last_charge="2026-10-03",
+                    notes="CANCEL: requested 2026-09-30 unconfirmed")]
+        text, _ = report(rows)
+        self.assertIn("CHARGED AFTER CANCEL REQUEST: Acme Basic", text)
+
+    def test_request_but_still_auto_renewing_is_flagged(self):
+        rows = [row(notes="CANCEL: requested 2026-10-01 unconfirmed")]
+        text, _ = report(rows)
+        self.assertIn("still marked auto-renewing", text)
+
+    def test_unconfirmed_request_is_listed_until_confirmed(self):
+        pending = [row(auto_renew="Off", next_event="2026-10-20", last_charge="2026-09-10",
+                       notes="CANCEL: requested 2026-09-30 unconfirmed")]
+        done = [row(auto_renew="Off", next_event="2026-10-20", last_charge="2026-09-10",
+                    notes="CANCEL: requested 2026-09-30 confirmed")]
+        self.assertIn("no confirmation seen yet", report(pending)[0])
+        self.assertNotIn("Cancel requested", report(done)[0])
+
+    def test_rows_without_cancel_notes_are_unaffected(self):
+        text, _ = report([row()])
+        self.assertNotIn("Cancel requested", text)
+        self.assertNotIn("CHARGED AFTER", text)
+
+
+class DocumentationTests(unittest.TestCase):
+    def test_diagrams_are_mermaid_blocks_of_known_types(self):
+        text = (SKILL / "references/diagrams.md").read_text()
+        blocks = re.findall(r"```mermaid\n(.*?)```", text, re.S)
+        self.assertEqual(len(blocks), 4)
+        for block in blocks:
+            self.assertRegex(block.strip().splitlines()[0],
+                             r"^(flowchart (TD|LR)|stateDiagram-v2)$")
+
+    def test_skill_offers_schedule_with_cadence(self):
+        text = (SKILL / "SKILL.md").read_text()
+        for phrase in ("offer a scheduled weekly", "Weekly (default)", "Not recommended"):
+            self.assertIn(phrase, text)
+
+    def test_cancel_help_is_text_only(self):
+        text = (SKILL / "references/cancellation-assist.md").read_text()
+        for phrase in ("never cancels anything", "Never a link", "Not provided, on purpose"):
+            self.assertIn(phrase, text)
+        self.assertIn("references/cancellation-assist.md", (SKILL / "SKILL.md").read_text())
+
+
 class HygieneTests(unittest.TestCase):
     def test_tracked_skill_files_contain_no_personal_markers(self):
         email = re.compile(r"[\w.+-]+@(?!example\.(com|org|invalid))[\w-]+\.[\w.]+")

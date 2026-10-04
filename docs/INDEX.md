@@ -20,4 +20,6 @@
 - [Subscription search patterns](../skills/subscription-tracker/references/vendor-patterns.md): queries, aggregators, fake renewals.
 - [Subscription scheduling](../skills/subscription-tracker/references/scheduled-task.md): weekly task template and checklist.
 - [Subscription lessons learned](../skills/subscription-tracker/references/lessons-learned.md): evidence from weekly unattended runs.
+- [Subscription diagrams](../skills/subscription-tracker/references/diagrams.md): weekly run, snapshot chain, row states, cancel flow.
+- [Subscription cancellation help](../skills/subscription-tracker/references/cancellation-assist.md): opt-in, instructions only.
 - [Subscription scripts tests](../tests/test_subscription_tracker.py): review math, golden output, formula neutralization, privacy checks.
