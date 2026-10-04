@@ -14,7 +14,7 @@ days. It reads mail. It never changes it, and it never cancels or buys anything.
 | [references/scheduled-task.md](references/scheduled-task.md) | Weekly task prompt, setup and monitoring checklist. |
 | [references/lessons-learned.md](references/lessons-learned.md) | What went wrong or surprised us over weeks of unattended runs. |
 | [references/diagrams.md](references/diagrams.md) | Mermaid diagrams: weekly run, snapshot chain, row states, cancel flow. |
-| [references/cancellation-assist.md](references/cancellation-assist.md) | Opt-in cancel help: instructions and message text only, never an action. |
+| [references/cancellation-assist.md](references/cancellation-assist.md) | Opt-in cancel help: instructions, or hands-on cancellation of rows the user authorizes one by one. |
 | scripts/review.py | Deterministic review: windows, totals, diffs, contradictions. |
 | scripts/build_tracker.py | CSV and XLSX output with formula neutralization. |
 | examples/ | Synthetic input, previous snapshot and the exact expected review. |
