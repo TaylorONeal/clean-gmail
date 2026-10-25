@@ -116,3 +116,16 @@ Read [Security](SECURITY.md) for authentication provenance, prompt/query injecti
 network restrictions for unsubscribe, account binding and recovery. See the
 [review](docs/SECURITY_REVIEW.md) for fixed findings and remaining limits, and the
 [documentation index](docs/INDEX.md) for maintained references.
+
+---
+
+## More from me
+
+I'm Taylor O'Neal. I work in product and analytics, teach at Miami University, and put the
+tools I actually use into the open.
+
+- [tayloroneal.com](https://www.tayloroneal.com) for what I'm working on and how to reach me
+- [@businesstaylor](https://x.com/businesstaylor) on X, where I post build notes
+- [@grizzpm](https://www.youtube.com/@grizzpm) on YouTube
+
+If this saved you time, a star helps other people find it. Issues and PRs are welcome.
