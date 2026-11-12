@@ -79,7 +79,9 @@ draft, protected or active correspondence. Use message IDs for mutation. If a
 tool only mutates conversations, skip mixed threads; never select all search
 results based on a sample. Recheck before writing so new replies invalidate
 stale plans. Filters are incoming-mail rules, not timers; never turn a backlog
-age query into an immediate filter on fresh codes or verification links.
+age query into an immediate filter on fresh codes or verification links. A
+filter for codes, activation, verification or welcome mail may only add a label;
+it never trashes, skips the Inbox or marks the mail read.
 
 ## S6 — Unsubscribe is an external request
 

@@ -19,7 +19,7 @@ before any action; skip if the tool cannot prove protection checks.
 
 | Candidate | Minimum backlog age | Additional check |
 |---|---|---|
-| Expired one-time login codes | 7 days | Confirm it is an expired code, not an account/security alert |
+| Expired one-time login codes | 7 days | Confirm it is an expired code, not an account/security alert; a code or access link for a future date (presale, event entry, scheduled sale) stays until that date passes |
 | Email activation prompts | 30 days | Account setup is no longer active; otherwise preserve |
 | Delivery status | 60 days | No receipt, return, warranty, claim or unresolved delivery |
 | Promotions from approved senders | 30 days | Exact sender/list rule; unread alone proves nothing |
@@ -48,10 +48,18 @@ unknown outcomes before another write. Offer recovery from the journal.
 
 ## Future mail and phishing
 
-Do not turn old-code, activation, welcome or calendar searches into incoming
-Trash filters: that removes fresh useful mail. Prefer the scheduled message-level
-age checks above. Any persistent filter is a separate reviewed plan with exact
-criteria, exclusions, examples and action; inspect existing filters first.
+Gmail filters act once, on arrival, and cannot test age. A filter that trashes,
+skips the Inbox or marks read for codes, activation, verification or welcome
+mail removes it before it is used, so never propose or keep one, and do not turn
+the backlog searches above into incoming Trash filters. If the user wants that
+mail organized, the safe shape is label-only: apply a label, keep it in the
+Inbox, no Skip Inbox, no Mark as read, no Delete. Later runs may use that label
+(resolved through the tools) plus the minimum ages above to discover candidates,
+then apply every per-message check; a label never replaces them. Any persistent
+filter is a separate reviewed plan with exact criteria, exclusions, examples and
+action; inspect existing filters first. If an existing filter trashes or skips
+the Inbox for these categories, flag it and propose a label-only replacement;
+change it only with the user's approval.
 No retroactive application unless separately included in the plan. A sender
 with mixed transactional and marketing mail is not a broad filter candidate.
 
