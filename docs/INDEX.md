@@ -12,6 +12,7 @@
 - [Scheduling](../skills/gmail-unsubscribe/scheduled-task.md): quiet census prompt.
 - [Installer](../scripts/install.py): self-contained, non-overwriting bundles.
 - [Tests](../tests/test_install.py): installation and reference checks.
+- [Filter safety tests](../tests/test_filter_safety.py): label-only filters and future-dated codes in the cleanup skills.
 - [Public package boundary](../AGENTS.md): separation from personal versions and publication checks.
 - [Personal assistant](../skills/gmail-personal-assistant/SKILL.md): decision briefs and follow-up tracking.
 - [Reference checker](../scripts/check.py): synchronize and verify standalone bundles.

@@ -99,6 +99,15 @@ Old Gmail filters are **not changed by this repository update**. If a previous
 version installed fresh-code/welcome Trash filters, review those existing filters
 and prepare an explicit removal/replacement plan before trusting ongoing cleanup.
 
+To find them in Gmail on the web: Settings (gear icon) > See all settings >
+Filters and Blocked Addresses. For each filter on codes, verification, activation
+or welcome mail whose actions include **Delete it** or **Skip the Inbox**, choose
+**edit** > **Continue**, clear those two boxes, tick **Apply the label** with a
+label of your choice, then **Update filter**. The mail then stays in the Inbox
+with a label, and the cleanup skills clear it later only after the minimum ages in
+their candidate tables. An agent may prepare this plan; it changes no filter
+without your approval.
+
 ## Verification and security
 
 ```sh
